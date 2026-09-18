@@ -1,0 +1,585 @@
+<div class="min-h-screen bg-slate-50">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-5">
+
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div>
+          <h1 class="text-2xl font-bold">
+            ResQGrid
+          </h1>
+
+          <p class="text-slate-300 text-sm">
+            Keeping Relief Connected When Networks Fail.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm">
+          <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+          System Online
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-6 py-8">
+
+    <!-- Heading -->
+    <div class="mb-8">
+
+      <h2 class="text-3xl font-bold text-slate-900">
+        Coordinator Dashboard
+      </h2>
+
+      <p class="text-slate-600 mt-2">
+        Monitor resident emergencies and camp supply requirements.
+      </p>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">
+          Camp Supply Requests
+        </p>
+
+        <p class="text-3xl font-bold text-slate-900 mt-2">
+          {{ totalRequests }}
+        </p>
+      </div>
+
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">
+          Critical Supply Requests
+        </p>
+
+        <p class="text-3xl font-bold text-red-600 mt-2">
+          {{ criticalRequests }}
+        </p>
+      </div>
+
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">
+          Pending Supply Requests
+        </p>
+
+        <p class="text-3xl font-bold text-orange-600 mt-2">
+          {{ pendingRequests }}
+        </p>
+      </div>
+
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <p class="text-sm text-slate-500">
+          Resident Help Requests
+        </p>
+
+        <p class="text-3xl font-bold text-blue-600 mt-2">
+          {{ totalHelpRequests }}
+        </p>
+      </div>
+
+    </div>
+
+
+    <!-- Filter -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-8">
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+        <div>
+          <h3 class="font-semibold text-slate-900">
+            Request Management
+          </h3>
+
+          <p class="text-sm text-slate-500">
+            Filter requests by emergency priority.
+          </p>
+        </div>
+
+
+        <div>
+
+          <label
+            for="priorityFilter"
+            class="block text-sm font-medium text-slate-700 mb-1">
+
+            Priority
+
+          </label>
+
+          <select
+            id="priorityFilter"
+            class="border border-slate-300 rounded-lg px-4 py-2 bg-white"
+            (change)="onPriorityFilterChange($event)">
+
+            <option value="ALL">
+              All
+            </option>
+
+            <option value="CRITICAL">
+              Critical
+            </option>
+
+            <option value="HIGH">
+              High
+            </option>
+
+            <option value="NORMAL">
+              Normal
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Loading -->
+    @if (isLoading) {
+
+      <div class="bg-white rounded-xl border p-10 text-center">
+
+        <div class="text-4xl mb-3">
+          ⏳
+        </div>
+
+        <p class="text-slate-600">
+          Loading requests...
+        </p>
+
+      </div>
+
+    }
+
+
+    <!-- Error -->
+    @if (!isLoading && errorMessage) {
+
+      <div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-6">
+
+        <p class="text-red-700">
+          {{ errorMessage }}
+        </p>
+
+        <button
+          type="button"
+          class="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg"
+          (click)="loadRequests()">
+
+          Try Again
+
+        </button>
+
+      </div>
+
+    }
+
+
+    @if (!isLoading && !errorMessage) {
+
+
+      <!-- ================================= -->
+      <!-- RESIDENT HELP REQUESTS -->
+      <!-- ================================= -->
+
+      <section class="mb-10">
+
+        <div class="flex items-center justify-between mb-4">
+
+          <div>
+
+            <h3 class="text-2xl font-bold text-slate-900">
+              🆘 Resident Help Requests
+            </h3>
+
+            <p class="text-slate-500 text-sm mt-1">
+              Emergency requests submitted by affected residents.
+            </p>
+
+          </div>
+
+          <span class="text-sm text-slate-500">
+            {{ filteredHelpRequests.length }} requests
+          </span>
+
+        </div>
+
+
+        @if (filteredHelpRequests.length === 0) {
+
+          <div class="bg-white rounded-xl border border-slate-200 p-8 text-center">
+
+            <div class="text-4xl mb-2">
+              📭
+            </div>
+
+            <p class="text-slate-600">
+              No resident requests found.
+            </p>
+
+          </div>
+
+        }
+
+
+        @for (request of filteredHelpRequests; track request.id) {
+
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+
+            <!-- Request header -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+
+              <div>
+
+                <div class="flex items-center gap-3 flex-wrap">
+
+                  <h4 class="text-lg font-bold text-slate-900">
+                    Help Request #{{ request.id }}
+                  </h4>
+
+                  <span [class]="getPriorityClasses(request.priority)">
+                    {{ request.priority }}
+                  </span>
+
+                </div>
+
+                <p class="text-sm text-slate-500 mt-1">
+                  Submitted by {{ request.name }}
+                </p>
+
+              </div>
+
+
+              <div class="text-sm">
+
+                <span class="text-slate-500">
+                  Status:
+                </span>
+
+                <span [class]="getStatusClasses(request.status)">
+                  {{ request.status }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Resident information -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+
+              <div class="bg-slate-50 rounded-lg p-4">
+
+                <p class="text-xs text-slate-500">
+                  Location
+                </p>
+
+                <p class="font-semibold text-slate-900 mt-1">
+                  {{ request.location }}
+                </p>
+
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+
+                <p class="text-xs text-slate-500">
+                  People
+                </p>
+
+                <p class="font-semibold text-slate-900 mt-1">
+                  {{ request.peopleCount }}
+                </p>
+
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+
+                <p class="text-xs text-slate-500">
+                  Help Required
+                </p>
+
+                <p class="font-semibold text-slate-900 mt-1">
+                  {{ request.helpType }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Description -->
+            <div class="bg-slate-50 rounded-lg p-4 mb-5">
+
+              <p class="text-xs text-slate-500">
+                Situation
+              </p>
+
+              <p class="text-slate-700 mt-1">
+                {{ request.description }}
+              </p>
+
+            </div>
+
+
+            <!-- Action -->
+            <div class="flex justify-end">
+
+              @if (getNextHelpStatus(request.status); as nextStatus) {
+
+                <button
+                  type="button"
+                  class="px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-700 disabled:opacity-50"
+                  [disabled]="updatingHelpRequestId === request.id"
+                  (click)="updateHelpRequestStatus(request, nextStatus)">
+
+                  @if (updatingHelpRequestId === request.id) {
+
+                    Updating...
+
+                  } @else {
+
+                    {{ getHelpActionText(request.status) }}
+
+                  }
+
+                </button>
+
+              } @else {
+
+                <div class="px-5 py-2.5 bg-green-50 text-green-700 rounded-lg font-medium">
+
+                  ✓ Successfully Delivered
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </section>
+
+
+
+      <!-- ================================= -->
+      <!-- CAMP SUPPLY REQUESTS -->
+      <!-- ================================= -->
+
+      <section>
+
+        <div class="flex items-center justify-between mb-4">
+
+          <div>
+
+            <h3 class="text-2xl font-bold text-slate-900">
+              📦 Camp Supply Requests
+            </h3>
+
+            <p class="text-slate-500 text-sm mt-1">
+              Supply requirements submitted by relief camps.
+            </p>
+
+          </div>
+
+          <span class="text-sm text-slate-500">
+            {{ filteredRequests.length }} requests
+          </span>
+
+        </div>
+
+
+        @if (filteredRequests.length === 0) {
+
+          <div class="bg-white rounded-xl border border-slate-200 p-8 text-center">
+
+            <div class="text-4xl mb-2">
+              📭
+            </div>
+
+            <p class="text-slate-600">
+              No camp supply requests found.
+            </p>
+
+          </div>
+
+        }
+
+
+        @for (request of filteredRequests; track request.id) {
+
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+
+              <div>
+
+                <div class="flex items-center gap-3 flex-wrap">
+
+                  <h4 class="text-lg font-bold text-slate-900">
+                    Supply Request #{{ request.id }}
+                  </h4>
+
+                  <span [class]="getPriorityClasses(request.priority)">
+                    {{ request.priority }}
+                  </span>
+
+                </div>
+
+                <p class="text-sm text-slate-500 mt-1">
+                  Camp ID: {{ request.campId }}
+                </p>
+
+              </div>
+
+
+              <div class="text-sm">
+
+                <span class="text-slate-500">
+                  Status:
+                </span>
+
+                <span [class]="getStatusClasses(request.status)">
+                  {{ request.status }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- Supply information -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
+
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-xs text-slate-500">
+                  People
+                </p>
+
+                <p class="text-xl font-bold mt-1">
+                  {{ request.peopleAffected }}
+                </p>
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-xs text-slate-500">
+                  Water
+                </p>
+
+                <p class="text-xl font-bold mt-1">
+                  {{ request.waterQuantity }}
+                </p>
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-xs text-slate-500">
+                  Food
+                </p>
+
+                <p class="text-xl font-bold mt-1">
+                  {{ request.foodQuantity }}
+                </p>
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-xs text-slate-500">
+                  Medicine
+                </p>
+
+                <p class="text-xl font-bold mt-1">
+                  {{ request.medicineQuantity }}
+                </p>
+              </div>
+
+
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-xs text-slate-500">
+                  Blankets
+                </p>
+
+                <p class="text-xl font-bold mt-1">
+                  {{ request.blanketQuantity }}
+                </p>
+              </div>
+
+            </div>
+
+
+            <!-- Action -->
+            <div class="flex justify-end">
+
+              @if (getNextStatus(request.status); as nextStatus) {
+
+                <button
+                  type="button"
+                  class="px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-700 disabled:opacity-50"
+                  [disabled]="updatingRequestId === request.id"
+                  (click)="updateRequestStatus(request, nextStatus)">
+
+                  @if (updatingRequestId === request.id) {
+
+                    Updating...
+
+                  } @else {
+
+                    @if (request.status === 'PENDING') {
+                      Accept Request
+                    }
+
+                    @if (request.status === 'ACCEPTED') {
+                      Dispatch Request
+                    }
+
+                    @if (request.status === 'DISPATCHED') {
+                      Mark Delivered
+                    }
+
+                  }
+
+                </button>
+
+              } @else {
+
+                <div class="px-5 py-2.5 bg-green-50 text-green-700 rounded-lg font-medium">
+
+                  ✓ Successfully Delivered
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+  </main>
+
+</div>

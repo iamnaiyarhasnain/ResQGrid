@@ -1,0 +1,119 @@
+<!-- Main dashboard container -->
+<div class="min-h-screen bg-slate-100">
+
+  <!-- ============================= -->
+  <!-- Header / Navigation Bar       -->
+  <!-- ============================= -->
+  <header class="bg-slate-900 text-white px-6 py-4">
+
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+
+      <!-- Application name -->
+      <div>
+        <h1 class="text-2xl font-bold">
+          🚨 ResQGrid
+        </h1>
+
+        <p class="text-sm text-slate-300">
+          Keeping Relief Connected When Networks Fail
+        </p>
+      </div>
+
+      <!-- Connection status -->
+      <div class="flex items-center gap-2">
+
+        <!-- Green dot means we are currently online -->
+        <span class="w-3 h-3 rounded-full bg-green-400"></span>
+
+        <span class="text-sm">
+          Online
+        </span>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- ============================= -->
+  <!-- Main Dashboard Content        -->
+  <!-- ============================= -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- Welcome section -->
+    <section class="mb-8">
+
+      <h2 class="text-3xl font-bold text-slate-900">
+        Camp Worker Dashboard
+      </h2>
+
+      <p class="mt-2 text-slate-600">
+        Manage supply requests and stay connected with the
+        relief coordination team.
+      </p>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- Camp Information Card         -->
+    <!-- ============================= -->
+    <section class="bg-white rounded-xl shadow-sm p-6 mb-8">
+
+      <p class="text-sm text-slate-500">
+        Current Camp
+      </p>
+
+      <div class="flex items-center justify-between mt-2">
+
+        <h3 class="text-2xl font-bold text-slate-900">
+          Camp C09
+        </h3>
+
+        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+          Active
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- Main Action                   -->
+    <!-- ============================= -->
+    <section class="bg-white rounded-xl shadow-sm p-8 text-center">
+
+      <div class="text-5xl mb-4">
+        📦
+      </div>
+
+      <h3 class="text-2xl font-bold text-slate-900">
+        Need Emergency Supplies?
+      </h3>
+
+      <p class="text-slate-600 mt-2 mb-6">
+        Create a supply request for your camp.
+      </p>
+
+      <!-- We'll connect this button to our request form later -->
+      <!--
+  Clicking this button navigates the user
+  to the Create Supply Request page.
+-->
+<button
+  routerLink="/create-request"
+  class="px-6 py-3 bg-red-600 hover:bg-red-700
+         text-white font-semibold rounded-lg
+         transition">
+
+  Create Supply Request
+
+</button>
+
+    </section>
+
+  </main>
+
+</div>
