@@ -2,86 +2,56 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-
-// Data sent to backend
+// Data we send when creating a help request
 export interface HelpRequestCreateRequest {
-
   name: string;
-
   location: string;
-
   peopleCount: number;
-
   helpType: string;
-
   priority: 'NORMAL' | 'HIGH' | 'CRITICAL';
-
   description: string;
 }
 
-
-// Data received from backend
+// Data we receive from the backend
 export interface HelpRequestResponse {
-
   id: number;
-
   name: string;
-
   location: string;
-
   peopleCount: number;
-
   helpType: string;
-
   priority: 'NORMAL' | 'HIGH' | 'CRITICAL';
-
   description: string;
-
-  status:
-    'PENDING'
-    | 'ACCEPTED'
-    | 'DISPATCHED'
-    | 'DELIVERED';
+  status: 'PENDING' | 'ACCEPTED' | 'DISPATCHED' | 'DELIVERED';
 }
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class HelpRequestService {
 
-  // Backend API
+  // Live AWS ECS Spring Boot backend
   private apiUrl =
-    'http://localhost:8080/api/help-requests';
+    'https://re-388d9066c92b42fa88b473a6a464be9b.ecs.ap-southeast-2.on.aws/api/help-requests';
 
-  // Browser storage key
-  private queueKey =
-    'resqgrid-help-request-queue';
+  // LocalStorage key used for offline requests
+  private queueKey = 'resqgrid-help-request-queue';
 
+  constructor(private http: HttpClient) {
 
-  constructor(
-    private http: HttpClient
-  ) {
+    // When internet comes back, automatically sync
+    // requests that were saved while offline.
+    window.addEventListener('online', () => {
+      this.flushQueuedRequests();
+    });
 
-    // When internet comes back,
-    // automatically send queued requests.
-    window.addEventListener(
-      'online',
-      () => this.flushQueuedRequests()
-    );
-
-    // Try sending previously queued requests
-    // when the application starts.
+    // If the application starts while online,
+    // try to sync any previously queued requests.
     if (navigator.onLine) {
       this.flushQueuedRequests();
     }
   }
 
-
-  // ==========================================
-  // ONLINE API
-  // ==========================================
-
+  // Send a new help request to the AWS backend
   createHelpRequest(
     request: HelpRequestCreateRequest
   ): Observable<HelpRequestResponse> {
@@ -92,24 +62,18 @@ export class HelpRequestService {
     );
   }
 
-
-  // Get all resident requests
-  getAllHelpRequests():
-    Observable<HelpRequestResponse[]> {
+  // Get all resident help requests
+  getAllHelpRequests(): Observable<HelpRequestResponse[]> {
 
     return this.http.get<HelpRequestResponse[]>(
       this.apiUrl
     );
   }
 
-
-  // Update request status
+  // Update the status of a help request
   updateStatus(
     id: number,
-    status:
-      'ACCEPTED'
-      | 'DISPATCHED'
-      | 'DELIVERED'
+    status: 'ACCEPTED' | 'DISPATCHED' | 'DELIVERED'
   ): Observable<HelpRequestResponse> {
 
     return this.http.patch<HelpRequestResponse>(
@@ -118,43 +82,33 @@ export class HelpRequestService {
     );
   }
 
-
-  // ==========================================
-  // OFFLINE QUEUE
-  // ==========================================
-
-  // Save request inside browser
+  // Store a request in the browser when the user is offline
   queueRequest(
     request: HelpRequestCreateRequest
   ): void {
 
-    // Get existing queued requests
-    const queue =
-      this.getQueuedRequests();
+    const queue = this.getQueuedRequests();
 
-    // Add new request
+    // Add the new request to the offline queue
     queue.push(request);
 
-    // Save back to browser
+    // Save the queue in browser LocalStorage
     localStorage.setItem(
       this.queueKey,
       JSON.stringify(queue)
     );
 
-    console.log(
-      'Request stored offline:',
-      request
-    );
+    console.log('Request stored offline:', request);
   }
 
+  // Get all requests currently waiting for internet
+  getQueuedRequests(): HelpRequestCreateRequest[] {
 
-  // Get all requests stored offline
-  getQueuedRequests():
-    HelpRequestCreateRequest[] {
+    const stored = localStorage.getItem(
+      this.queueKey
+    );
 
-    const stored =
-      localStorage.getItem(this.queueKey);
-
+    // No queued requests
     if (!stored) {
       return [];
     }
@@ -165,33 +119,29 @@ export class HelpRequestService {
 
     } catch {
 
+      // If LocalStorage contains invalid data,
+      // return an empty queue instead of crashing.
       return [];
     }
   }
 
-
-  // Number of requests waiting for sync
+  // Get number of requests waiting for synchronization
   getQueuedRequestCount(): number {
 
     return this.getQueuedRequests().length;
   }
 
-
-  // ==========================================
-  // STORE-AND-FORWARD
-  // ==========================================
-
+  // Send all offline requests when internet returns
   flushQueuedRequests(): void {
 
-    // Don't try to send if still offline
+    // Do nothing if internet is still unavailable
     if (!navigator.onLine) {
       return;
     }
 
-    const queue =
-      this.getQueuedRequests();
+    const queue = this.getQueuedRequests();
 
-    // Nothing waiting
+    // Nothing to synchronize
     if (queue.length === 0) {
       return;
     }
@@ -200,24 +150,18 @@ export class HelpRequestService {
       `Syncing ${queue.length} offline request(s)...`
     );
 
-
-    // Send requests one by one
-    this.sendQueuedRequests(
-      queue,
-      0
-    );
+    this.sendQueuedRequests(queue, 0);
   }
 
-
+  // Send queued requests one by one
   private sendQueuedRequests(
     queue: HelpRequestCreateRequest[],
     index: number
   ): void {
 
-    // All requests have been processed
+    // All requests successfully synchronized
     if (index >= queue.length) {
 
-      // Clear queue
       localStorage.removeItem(
         this.queueKey
       );
@@ -229,12 +173,10 @@ export class HelpRequestService {
       return;
     }
 
-
-    // Send current request
+    // Send the current queued request
     this.createHelpRequest(
       queue[index]
-    )
-    .subscribe({
+    ).subscribe({
 
       next: (response) => {
 
@@ -243,13 +185,12 @@ export class HelpRequestService {
           response
         );
 
-        // Continue with next request
+        // Move to the next request
         this.sendQueuedRequests(
           queue,
           index + 1
         );
       },
-
 
       error: (error) => {
 
@@ -258,7 +199,8 @@ export class HelpRequestService {
           error
         );
 
-        // Keep remaining requests in storage.
+        // Keep the remaining requests
+        // so they can be retried later.
         const remaining =
           queue.slice(index);
 
@@ -267,7 +209,6 @@ export class HelpRequestService {
           JSON.stringify(remaining)
         );
       }
-
     });
   }
 }
