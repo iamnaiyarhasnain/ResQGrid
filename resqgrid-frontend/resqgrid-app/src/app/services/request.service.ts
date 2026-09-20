@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+import { API_BASE_URL } from './api.config';
 
 import {
   SupplyRequestCreateRequest,
@@ -13,10 +15,12 @@ import {
 export class RequestService {
 
   // Live AWS ECS Spring Boot backend
-  private apiUrl =
-    'https://re-388d9066c92b42fa88b473a6a464be9b.ecs.ap-southeast-2.on.aws/api/requests';
+  private apiUrl = `${API_BASE_URL}/requests`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   // Create a new camp supply request
   createRequest(
@@ -33,7 +37,8 @@ export class RequestService {
   getAllRequests(): Observable<SupplyRequestResponse[]> {
 
     return this.http.get<SupplyRequestResponse[]>(
-      this.apiUrl
+      this.apiUrl,
+      this.authService.authOptions
     );
   }
 
@@ -45,7 +50,8 @@ export class RequestService {
 
     return this.http.patch<SupplyRequestResponse>(
       `${this.apiUrl}/${id}/status?status=${status}`,
-      {}
+      {},
+      this.authService.authOptions
     );
   }
 }

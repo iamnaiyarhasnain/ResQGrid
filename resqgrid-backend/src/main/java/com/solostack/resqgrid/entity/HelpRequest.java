@@ -6,6 +6,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +50,25 @@ public class HelpRequest {
     // Short description of the problem
     @NotBlank(message = "Description is required")
     private String description;
+
+    // Disaster context lets responders prepare the right type of support.
+    @Column(length = 60)
+    private String disasterType;
+
+    @Column(length = 500)
+    private String disasterDetails;
+
+    // Optional reference image, capped by the API before it is persisted.
+    @Lob
+    private String photoData;
+
+    // A client generated ID makes offline retries idempotent.
+    @Column(unique = true, length = 64)
+    private String clientRequestId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id")
+    private AppUser createdBy;
 
     // Current status of the request
     @Enumerated(EnumType.STRING)
@@ -111,6 +135,21 @@ public class HelpRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getDisasterType() { return disasterType; }
+    public void setDisasterType(String disasterType) { this.disasterType = disasterType; }
+
+    public String getDisasterDetails() { return disasterDetails; }
+    public void setDisasterDetails(String disasterDetails) { this.disasterDetails = disasterDetails; }
+
+    public String getPhotoData() { return photoData; }
+    public void setPhotoData(String photoData) { this.photoData = photoData; }
+
+    public String getClientRequestId() { return clientRequestId; }
+    public void setClientRequestId(String clientRequestId) { this.clientRequestId = clientRequestId; }
+
+    public AppUser getCreatedBy() { return createdBy; }
+    public void setCreatedBy(AppUser createdBy) { this.createdBy = createdBy; }
 
     public RequestStatus getStatus() {
         return status;

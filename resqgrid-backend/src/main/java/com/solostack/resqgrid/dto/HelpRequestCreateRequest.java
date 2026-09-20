@@ -26,6 +26,16 @@ public class HelpRequestCreateRequest {
     @NotBlank(message = "Description is required")
     private String description;
 
+    @NotBlank(message = "Disaster type is required")
+    private String disasterType;
+
+    private String disasterDetails;
+
+    private String photoData;
+
+    @NotBlank(message = "Client request ID is required")
+    private String clientRequestId;
+
     public HelpRequestCreateRequest() {
     }
 
@@ -76,4 +86,16 @@ public class HelpRequestCreateRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getDisasterType() { return disasterType; }
+    public void setDisasterType(String disasterType) { this.disasterType = disasterType; }
+
+    public String getDisasterDetails() { return disasterDetails; }
+    public void setDisasterDetails(String disasterDetails) { this.disasterDetails = disasterDetails; }
+
+    public String getPhotoData() { return photoData; }
+    public void setPhotoData(String photoData) { this.photoData = photoData; }
+
+    public String getClientRequestId() { return clientRequestId; }
+    public void setClientRequestId(String clientRequestId) { this.clientRequestId = clientRequestId; }
 }

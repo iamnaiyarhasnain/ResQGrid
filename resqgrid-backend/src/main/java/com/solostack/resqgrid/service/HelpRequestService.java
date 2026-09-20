@@ -3,6 +3,7 @@ package com.solostack.resqgrid.service;
 import com.solostack.resqgrid.dto.HelpRequestCreateRequest;
 import com.solostack.resqgrid.dto.HelpRequestResponse;
 import com.solostack.resqgrid.entity.HelpRequest;
+import com.solostack.resqgrid.entity.AppUser;
 import com.solostack.resqgrid.entity.RequestStatus;
 import com.solostack.resqgrid.exception.InvalidStatusTransitionException;
 import com.solostack.resqgrid.exception.ResourceNotFoundException;
@@ -25,7 +26,30 @@ public class HelpRequestService {
 
     // Create a new request from a resident
     public HelpRequestResponse createRequest(
-            HelpRequestCreateRequest request) {
+            HelpRequestCreateRequest request,
+            AppUser submittedBy) {
+
+        // A timeout can occur after the server has already saved the request.
+        // Returning the first saved copy makes offline retries safe.
+        var existingRequest = helpRequestRepository
+                .findByClientRequestId(request.getClientRequestId());
+
+        if (existingRequest.isPresent()) {
+            return toResponse(existingRequest.get());
+        }
+
+        if ("OTHER".equalsIgnoreCase(request.getDisasterType())
+                && (request.getDisasterDetails() == null
+                || request.getDisasterDetails().isBlank())) {
+            throw new IllegalArgumentException(
+                    "Describe the disaster when Other is selected");
+        }
+
+        if (request.getPhotoData() != null
+                && request.getPhotoData().length() > 2_100_000) {
+            throw new IllegalArgumentException(
+                    "Reference photo must be 1.5 MB or smaller");
+        }
 
         HelpRequest helpRequest = new HelpRequest();
 
@@ -35,6 +59,11 @@ public class HelpRequestService {
         helpRequest.setHelpType(request.getHelpType());
         helpRequest.setPriority(request.getPriority());
         helpRequest.setDescription(request.getDescription());
+        helpRequest.setDisasterType(request.getDisasterType());
+        helpRequest.setDisasterDetails(request.getDisasterDetails());
+        helpRequest.setPhotoData(request.getPhotoData());
+        helpRequest.setClientRequestId(request.getClientRequestId());
+        helpRequest.setCreatedBy(submittedBy);
 
         // Every new request starts as PENDING
         helpRequest.setStatus(RequestStatus.PENDING);
@@ -117,6 +146,10 @@ public class HelpRequestService {
                 request.getHelpType(),
                 request.getPriority(),
                 request.getDescription(),
+                request.getDisasterType(),
+                request.getDisasterDetails(),
+                request.getPhotoData(),
+                request.getClientRequestId(),
                 request.getStatus()
         );
     }

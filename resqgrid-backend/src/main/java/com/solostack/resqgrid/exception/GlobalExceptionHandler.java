@@ -74,4 +74,25 @@ public class GlobalExceptionHandler {
                 400
         );
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(
+            AuthenticationException exception) {
+        return new ErrorResponse(exception.getMessage(), 401);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleAuthorizationException(
+            AuthorizationException exception) {
+        return new ErrorResponse(exception.getMessage(), 403);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(
+            IllegalArgumentException exception) {
+        return new ErrorResponse(exception.getMessage(), 400);
+    }
 }

@@ -9,6 +9,9 @@ import { CreateRequest }
 import { CoordinatorDashboard }
   from './pages/coordinator-dashboard/coordinator-dashboard';
 
+import { CoordinatorLogin }
+  from './pages/coordinator-login/coordinator-login';
+
 import { UserDashboard }
   from './pages/user-dashboard/user-dashboard';
 
@@ -31,6 +34,12 @@ export const routes: Routes = [
   {
     path: 'coordinator',
     component: CoordinatorDashboard
+  },
+
+  // Coordinator sign-in and access-level selection
+  {
+    path: 'coordinator-login',
+    component: CoordinatorLogin
   },
 
   // Resident/User Dashboard

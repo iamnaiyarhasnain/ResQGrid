@@ -1,0 +1,8 @@
+<svg width="182" height="48" viewBox="0 0 182 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ResQGrid</title>
+  <desc id="desc">ResQGrid relief coordination logo</desc>
+  <rect width="48" height="48" rx="15" fill="#262523"/>
+  <path d="M24 11V37M11 24H37" stroke="#FFFDF8" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="24" cy="24" r="8.5" stroke="#D8D1C5" stroke-width="2"/>
+  <text x="62" y="31" fill="#262523" font-family="Georgia, serif" font-size="25" font-weight="700" letter-spacing="-1.2">ResQGrid</text>
+</svg>

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { RouterLink } from '@angular/router';
+
 import { RequestService } from '../../services/request.service';
 
 import {
@@ -14,13 +16,17 @@ import { SupplyRequestResponse }
 @Component({
   selector: 'app-coordinator-dashboard',
 
-  imports: [],
+  imports: [RouterLink],
 
   templateUrl: './coordinator-dashboard.html',
 
   styleUrl: './coordinator-dashboard.css'
 })
 export class CoordinatorDashboard {
+
+  // The selected access level is set by the coordinator gateway.
+  coordinatorLevel =
+    localStorage.getItem('resqgridCoordinatorLevel') ?? 'DISTRICT';
 
   // Existing camp supply requests
   requests: SupplyRequestResponse[] = [];
@@ -50,6 +56,20 @@ export class CoordinatorDashboard {
     this.loadRequests();
 
     this.loadHelpRequests();
+  }
+
+
+  get coordinatorTitle(): string {
+
+    if (this.coordinatorLevel === 'NATIONAL') {
+      return 'National coordinator';
+    }
+
+    if (this.coordinatorLevel === 'FIELD') {
+      return 'Field coordinator';
+    }
+
+    return 'District coordinator';
   }
 
 

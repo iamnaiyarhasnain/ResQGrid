@@ -1,418 +1,146 @@
-<div class="min-h-screen bg-slate-50">
-
-  <!-- Header -->
-  <header class="bg-slate-900 text-white">
-
-    <div class="max-w-6xl mx-auto px-6 py-5">
-
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-        <div>
-
-          <h1 class="text-2xl font-bold">
-            ResQGrid
-          </h1>
-
-          <p class="text-slate-300 text-sm">
-            Keeping Relief Connected When Networks Fail.
-          </p>
-
-        </div>
-
-
-        <!-- Network Status -->
-        @if (isOnline) {
-
-          <div class="flex items-center gap-2 text-sm">
-
-            <span class="w-3 h-3 bg-green-400 rounded-full"></span>
-
-            Online
-
-          </div>
-
+<div class="min-h-screen overflow-hidden bg-[#f7f5f0] text-[#2b2a27]">
+  <header class="border-b border-[#e2ddd4] bg-[#fffdf8]/95">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-5 px-6 py-5 lg:px-8">
+      <a href="#top" class="shrink-0" aria-label="ResQGrid home"><img src="/resqgrid-logo.svg" alt="ResQGrid" class="h-10 w-auto" /></a>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <span [class]="isOnline ? 'hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-[#626057]' : 'hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-[#8a5d29]'">
+          <span [class]="isOnline ? 'h-2 w-2 rounded-full bg-[#7f9b82]' : 'h-2 w-2 rounded-full bg-[#b88543]'"></span>{{ isOnline ? 'Connection available' : 'Offline mode' }}
+        </span>
+        <a routerLink="/feedback" class="hidden text-xs font-bold text-[#625e56] hover:text-[#292824] sm:inline">Feedback</a>
+        @if (currentUser) {
+          <button type="button" (click)="logout()" class="rounded-lg border border-[#d7d1c7] bg-[#fffdf9] px-3.5 py-2 text-xs font-bold text-[#403e38] transition hover:border-[#6c685f] hover:bg-[#f4f1ea] sm:px-4 sm:text-sm">Hi, {{ currentUser.name }} · Sign out</button>
         } @else {
-
-          <div class="flex items-center gap-2 text-sm">
-
-            <span class="w-3 h-3 bg-orange-400 rounded-full"></span>
-
-            Offline Mode
-
-          </div>
-
+          <button type="button" (click)="openAuthPanel('register')" class="rounded-lg border border-[#d7d1c7] bg-[#fffdf9] px-3.5 py-2 text-xs font-bold text-[#403e38] transition hover:border-[#6c685f] hover:bg-[#f4f1ea] sm:px-4 sm:text-sm">Sign in or register</button>
         }
-
+        <a routerLink="/coordinator-login" class="hidden rounded-lg bg-[#2b2a27] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#46423c] sm:inline-flex sm:px-4 sm:text-sm">Team sign in</a>
       </div>
-
     </div>
-
   </header>
 
-
-  <!-- Main -->
-  <main class="max-w-6xl mx-auto px-6 py-10">
-
-
-    <!-- Title -->
-    <div class="text-center mb-8">
-
-      <div class="text-5xl mb-4">
-        🆘
-      </div>
-
-      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
-        Need Help?
-      </h2>
-
-      <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
-
-        Submit an emergency request.
-        ResQGrid can store your request when connectivity is unavailable
-        and send it when the connection returns.
-
-      </p>
-
-    </div>
-
-
-    <!-- Offline Queue -->
-    @if (queuedRequestCount > 0) {
-
-      <div class="max-w-3xl mx-auto mb-6">
-
-        <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
-
-          <p class="text-orange-700 font-semibold">
-
-            🟠 {{ queuedRequestCount }}
-            request(s) waiting for network sync.
-
-          </p>
-
-        </div>
-
-      </div>
-
-    }
-
-
-    <!-- Success Message -->
-    @if (successMessage) {
-
-      <div class="max-w-3xl mx-auto mb-6">
-
-        <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-
-          <p class="text-green-700 font-semibold">
-            {{ successMessage }}
-          </p>
-
-
-          @if (requestId) {
-
-            <p class="text-green-700 mt-2">
-
-              Request ID:
-
-              <span class="font-bold">
-                #{{ requestId }}
-              </span>
-
-            </p>
-
-          }
-
-        </div>
-
-      </div>
-
-    }
-
-
-    <!-- Error -->
-    @if (errorMessage) {
-
-      <div class="max-w-3xl mx-auto mb-6">
-
-        <div class="bg-red-50 border border-red-200 rounded-xl p-5">
-
-          <p class="text-red-700 font-semibold">
-            {{ errorMessage }}
-          </p>
-
-        </div>
-
-      </div>
-
-    }
-
-
-    <!-- Form -->
-    <div class="max-w-3xl mx-auto">
-
-      <form
-        [formGroup]="helpRequestForm"
-        (ngSubmit)="onSubmit()"
-        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
-
-
-        <h3 class="text-xl font-bold text-slate-900 mb-6">
-          Emergency Help Request
-        </h3>
-
-
-        <!-- Name -->
-        <div class="mb-5">
-
-          <label
-            for="name"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            Your Name
-
-          </label>
-
-          <input
-            id="name"
-            type="text"
-            formControlName="name"
-            placeholder="Enter your name"
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          />
-
-          @if (
-            helpRequestForm.get('name')?.invalid &&
-            helpRequestForm.get('name')?.touched
-          ) {
-
-            <p class="text-red-600 text-sm mt-1">
-              Name is required.
-            </p>
-
-          }
-
-        </div>
-
-
-        <!-- Location -->
-        <div class="mb-5">
-
-          <label
-            for="location"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            Location / Area
-
-          </label>
-
-          <input
-            id="location"
-            type="text"
-            formControlName="location"
-            placeholder="Enter your area or locality"
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          />
-
-          @if (
-            helpRequestForm.get('location')?.invalid &&
-            helpRequestForm.get('location')?.touched
-          ) {
-
-            <p class="text-red-600 text-sm mt-1">
-              Location is required.
-            </p>
-
-          }
-
-        </div>
-
-
-        <!-- People -->
-        <div class="mb-5">
-
-          <label
-            for="peopleCount"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            Number of People
-
-          </label>
-
-          <input
-            id="peopleCount"
-            type="number"
-            min="1"
-            formControlName="peopleCount"
-            placeholder="How many people need help?"
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          />
-
-          @if (
-            helpRequestForm.get('peopleCount')?.invalid &&
-            helpRequestForm.get('peopleCount')?.touched
-          ) {
-
-            <p class="text-red-600 text-sm mt-1">
-              Enter at least 1 person.
-            </p>
-
-          }
-
-        </div>
-
-
-        <!-- Help Type -->
-        <div class="mb-5">
-
-          <label
-            for="helpType"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            What Help Do You Need?
-
-          </label>
-
-          <select
-            id="helpType"
-            formControlName="helpType"
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white">
-
-            <option value="">
-              Select help type
-            </option>
-
-            <option value="WATER">
-              💧 Water
-            </option>
-
-            <option value="FOOD">
-              🍱 Food
-            </option>
-
-            <option value="MEDICINE">
-              💊 Medicine
-            </option>
-
-            <option value="BLANKETS">
-              🛏️ Blankets
-            </option>
-
-            <option value="MEDICAL_ASSISTANCE">
-              🏥 Medical Assistance
-            </option>
-
-            <option value="RESCUE">
-              🚨 Rescue
-            </option>
-
-            <option value="OTHER">
-              📦 Other
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- Priority -->
-        <div class="mb-5">
-
-          <label
-            for="priority"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            Priority
-
-          </label>
-
-          <select
-            id="priority"
-            formControlName="priority"
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 bg-white">
-
-            <option value="">
-              Select priority
-            </option>
-
-            <option value="NORMAL">
-              Normal
-            </option>
-
-            <option value="HIGH">
-              High
-            </option>
-
-            <option value="CRITICAL">
-              🔴 Critical Emergency
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- Description -->
-        <div class="mb-7">
-
-          <label
-            for="description"
-            class="block text-sm font-medium text-slate-700 mb-2">
-
-            Describe Your Situation
-
-          </label>
-
-          <textarea
-            id="description"
-            rows="4"
-            formControlName="description"
-            placeholder="Briefly explain what assistance you need..."
-            class="w-full border border-slate-300 rounded-lg px-4 py-3 resize-none">
-          </textarea>
-
-        </div>
-
-
-        <!-- Submit -->
-        <button
-          type="submit"
-          [disabled]="isSubmitting"
-          class="w-full bg-red-600 text-white font-semibold py-3.5 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
-
-          @if (isSubmitting) {
-
-            Saving Request...
-
+  @if (showAuthPanel) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#292824]/45 p-4" role="dialog" aria-modal="true" aria-labelledby="account-title">
+      <section class="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-[1.75rem] bg-[#fffdf9] p-6 shadow-2xl sm:p-8">
+        <div class="flex items-start justify-between gap-5"><div><p class="text-xs font-bold uppercase tracking-[0.15em] text-[#7a746a]">Optional resident account</p><h2 id="account-title" class="mt-2 font-serif text-3xl tracking-[-0.035em]">{{ authMode === 'register' ? 'Stay connected to help.' : 'Welcome back.' }}</h2></div><button type="button" (click)="showAuthPanel = false" class="rounded-full bg-[#efede7] px-3 py-1.5 text-sm font-bold text-[#575249]" aria-label="Close account panel">×</button></div>
+        <p class="mt-3 text-sm leading-6 text-[#6d675d]">An account is never required to request emergency help. It simply lets you identify your request with an email or phone number.</p>
+        <div class="mt-6 grid grid-cols-2 rounded-xl bg-[#efede7] p-1 text-sm font-bold"><button type="button" (click)="setAuthMode('register')" [class]="authMode === 'register' ? 'rounded-lg bg-white px-3 py-2 text-[#2d2b27] shadow-sm' : 'rounded-lg px-3 py-2 text-[#777167]'">Register</button><button type="button" (click)="setAuthMode('login')" [class]="authMode === 'login' ? 'rounded-lg bg-white px-3 py-2 text-[#2d2b27] shadow-sm' : 'rounded-lg px-3 py-2 text-[#777167]'">Sign in</button></div>
+        <form [formGroup]="authForm" (ngSubmit)="onAuthSubmit()" class="mt-6" novalidate>
+          @if (authMode === 'register') {
+            <div><label for="accountName" class="mb-2 block text-sm font-bold text-[#48443e]">Your name</label><input id="accountName" type="text" formControlName="name" autocomplete="name" placeholder="Enter your name" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" /></div>
+            <div class="mt-4"><label for="accountEmail" class="mb-2 block text-sm font-bold text-[#48443e]">Email address <span class="font-normal text-[#827c72]">or phone</span></label><input id="accountEmail" type="email" formControlName="email" autocomplete="email" placeholder="you@example.com" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" /></div>
+            <div class="mt-4"><label for="accountPhone" class="mb-2 block text-sm font-bold text-[#48443e]">Phone number <span class="font-normal text-[#827c72]">or email</span></label><input id="accountPhone" type="tel" formControlName="phone" autocomplete="tel" placeholder="e.g. +91 98765 43210" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" /></div>
           } @else {
-
-            🚨 Submit Help Request
-
+            <div><label for="accountIdentifier" class="mb-2 block text-sm font-bold text-[#48443e]">Email address or phone number</label><input id="accountIdentifier" type="text" formControlName="identifier" autocomplete="username" placeholder="Enter your email or phone" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" /></div>
           }
-
-        </button>
-
-
-        <!-- Offline explanation -->
-        <p class="text-xs text-slate-500 text-center mt-4">
-
-          @if (isOnline) {
-
-            Your request will be sent to the relief coordination system.
-
-          } @else {
-
-            You're offline. Your request will be saved on this device
-            and forwarded automatically when connectivity returns.
-
-          }
-
-        </p>
-
-      </form>
-
+          <div class="mt-4"><label for="accountPassword" class="mb-2 block text-sm font-bold text-[#48443e]">Password</label><input id="accountPassword" type="password" formControlName="password" autocomplete="current-password" placeholder="At least 8 characters" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" /></div>
+          @if (authErrorMessage) { <p class="mt-3 text-sm font-medium text-[#9a4236]">{{ authErrorMessage }}</p> }
+          <button type="submit" [disabled]="isAuthSubmitting" class="mt-6 w-full rounded-xl bg-[#2b2a27] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#46423c] disabled:opacity-60">{{ isAuthSubmitting ? 'Please wait…' : (authMode === 'register' ? 'Create optional account' : 'Sign in') }}</button>
+        </form>
+      </section>
     </div>
+  }
 
+  <main id="top">
+    <section class="relative mx-auto max-w-7xl px-6 pb-16 pt-14 lg:px-8 lg:pb-20 lg:pt-20">
+      <div class="absolute -right-10 top-4 h-72 w-72 rounded-full border border-[#e5e0d7] bg-[#f1eee7] opacity-70"></div>
+      <div class="absolute right-20 top-24 h-40 w-40 rounded-full border border-[#e8e3da]"></div>
+      <div class="relative max-w-3xl">
+        <p class="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ded9cf] bg-[#fcfaf5] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-[#706b62]"><span class="h-1.5 w-1.5 rounded-full bg-[#6d6a61]"></span>Relief, without the wait</p>
+        <h1 class="font-serif text-5xl leading-[1.02] tracking-[-0.055em] text-[#292824] sm:text-6xl lg:text-7xl">Help is closer<br class="hidden sm:block" /> than it feels.</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-[#656057] sm:text-xl">ResQGrid gives people affected by a disaster a simple way to ask for water, food, medicine, rescue, and other urgent support—whether a network is available or not.</p>
+        <div class="mt-8 flex flex-wrap items-center gap-4 text-sm text-[#666157]">
+          <span class="inline-flex items-center gap-2"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[#e7e3db] text-xs text-[#46423c]">✓</span>Save requests offline</span>
+          <span class="inline-flex items-center gap-2"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[#e7e3db] text-xs text-[#46423c]">✓</span>Connect with local responders</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-[#e4dfd5] bg-[#efede7]">
+      <div class="mx-auto grid max-w-7xl gap-7 px-6 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div><p class="text-xs font-bold uppercase tracking-[0.16em] text-[#7c766b]">Built around people</p><h2 class="mt-2 font-serif text-3xl tracking-[-0.035em] text-[#302e2a]">A calmer path through an emergency.</h2></div>
+        <div class="grid gap-5 text-sm leading-7 text-[#625e56] sm:grid-cols-2">
+          <p>In a crisis, it can be difficult to know who has heard your call for help. ResQGrid turns essential details—your location, the number of people, and what is needed—into an actionable request for local relief teams.</p>
+          <p>The request stays safely on your device if coverage drops. As soon as a connection returns, it is synchronised so coordinators can accept, dispatch, and deliver support with a clear view of each need.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-6 py-14 lg:px-8 lg:py-20">
+      <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div><p class="text-xs font-bold uppercase tracking-[0.16em] text-[#7b756c]">Resident help desk</p><h2 class="mt-2 font-serif text-4xl tracking-[-0.04em] text-[#2b2a27]">Tell us what you need.</h2><p class="mt-2 max-w-xl text-sm leading-6 text-[#686258]">Share only what helps responders reach you and understand the situation.</p></div>
+        <span [class]="isOnline ? 'inline-flex w-fit items-center gap-2 rounded-full bg-[#e5ece4] px-3 py-1.5 text-xs font-bold text-[#4f6c53]' : 'inline-flex w-fit items-center gap-2 rounded-full bg-[#f2e6d3] px-3 py-1.5 text-xs font-bold text-[#895c27]'">
+          <span [class]="isOnline ? 'h-1.5 w-1.5 rounded-full bg-[#719879]' : 'h-1.5 w-1.5 rounded-full bg-[#b6823d]'"></span>{{ isOnline ? 'Ready to send' : 'Will save safely offline' }}
+        </span>
+      </div>
+
+      @if (queuedRequestCount > 0) {
+        <div class="mb-6 flex items-start gap-3 rounded-2xl border border-[#e3cda9] bg-[#fbf4e8] p-4 text-sm text-[#785a2d]"><span class="mt-0.5 text-base">◌</span><p><strong>{{ queuedRequestCount }} request(s)</strong> are safely waiting on this device and will be sent when the connection returns.</p></div>
+      }
+      @if (successMessage) {
+        <div class="mb-6 rounded-2xl border border-[#ceddce] bg-[#edf5ec] p-4 text-sm text-[#456047]"><p class="font-semibold">{{ successMessage }}</p>@if (requestId) { <p class="mt-1">Your reference number is <strong>#{{ requestId }}</strong>.</p> }</div>
+      }
+      @if (errorMessage) { <div class="mb-6 rounded-2xl border border-[#e7c9c2] bg-[#fdf1ee] p-4 text-sm font-semibold text-[#9a4236]">{{ errorMessage }}</div> }
+
+      <div class="grid gap-7 lg:grid-cols-[1.35fr_0.65fr]">
+        <form [formGroup]="helpRequestForm" (ngSubmit)="onSubmit()" novalidate class="rounded-[1.75rem] border border-[#e3ded4] bg-[#fffdf9] p-6 shadow-[0_12px_35px_rgba(61,57,48,0.06)] sm:p-8">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="mb-2 block text-sm font-bold text-[#48443e]">Your name</label>
+              <input id="name" type="text" formControlName="name" placeholder="Enter your name" autocomplete="name" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa49a] focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" />
+              @if (helpRequestForm.get('name')?.invalid && helpRequestForm.get('name')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Name is required.</p> }
+            </div>
+            <div>
+              <label for="location" class="mb-2 block text-sm font-bold text-[#48443e]">Location or area</label>
+              <input id="location" type="text" formControlName="location" placeholder="Your locality or landmark" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa49a] focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" />
+              @if (helpRequestForm.get('location')?.invalid && helpRequestForm.get('location')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Location is required.</p> }
+            </div>
+            <div>
+              <label for="peopleCount" class="mb-2 block text-sm font-bold text-[#48443e]">People who need help</label>
+              <input id="peopleCount" type="number" min="1" formControlName="peopleCount" placeholder="e.g. 4" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa49a] focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]" />
+              @if (helpRequestForm.get('peopleCount')?.invalid && helpRequestForm.get('peopleCount')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Enter at least 1 person.</p> }
+            </div>
+            <div>
+              <label for="helpType" class="mb-2 block text-sm font-bold text-[#48443e]">What do you need?</label>
+              <select id="helpType" formControlName="helpType" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm text-[#3e3b36] outline-none transition focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]">
+                <option value="">Choose the kind of help</option><option value="WATER">Water</option><option value="FOOD">Food</option><option value="MEDICINE">Medicine</option><option value="BLANKETS">Blankets</option><option value="MEDICAL_ASSISTANCE">Medical assistance</option><option value="RESCUE">Rescue</option><option value="OTHER">Other</option>
+              </select>
+              @if (helpRequestForm.get('helpType')?.invalid && helpRequestForm.get('helpType')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Select the help you need.</p> }
+            </div>
+          </div>
+          <div class="mt-5">
+            <label for="priority" class="mb-2 block text-sm font-bold text-[#48443e]">How urgent is this?</label>
+            <select id="priority" formControlName="priority" class="w-full rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm text-[#3e3b36] outline-none transition focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]">
+              <option value="">Choose urgency</option><option value="NORMAL">Normal — help needed soon</option><option value="HIGH">High — urgent assistance needed</option><option value="CRITICAL">Critical — immediate emergency</option>
+            </select>
+            @if (helpRequestForm.get('priority')?.invalid && helpRequestForm.get('priority')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Select the urgency level.</p> }
+          </div>
+          <div class="mt-5">
+            <label for="description" class="mb-2 block text-sm font-bold text-[#48443e]">Briefly describe the situation</label>
+            <textarea id="description" rows="4" formControlName="description" placeholder="Include useful details such as access, medical needs, or nearby landmarks..." class="w-full resize-none rounded-xl border border-[#ded8ce] bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa49a] focus:border-[#615d55] focus:ring-4 focus:ring-[#ede9e1]"></textarea>
+            @if (helpRequestForm.get('description')?.invalid && helpRequestForm.get('description')?.touched) { <p class="mt-1.5 text-xs font-medium text-[#9a4035]">Please add at least a few details.</p> }
+          </div>
+          <button type="submit" [disabled]="isSubmitting" class="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#2b2a27] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#46423c] disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-4 focus:ring-[#d8d3c9]">
+            @if (isSubmitting) { Saving your request... } @else { Submit help request <span aria-hidden="true">→</span> }
+          </button>
+          <p class="mt-4 text-center text-xs leading-5 text-[#8a847a]">{{ isOnline ? 'Your request will be sent to the local relief coordination team.' : 'Your request will be kept on this device and sent automatically when connection returns.' }}</p>
+        </form>
+
+        <aside class="flex flex-col justify-between rounded-[1.75rem] bg-[#302f2b] p-7 text-[#faf8f2] sm:p-8">
+          <div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#47443d] text-xl">✦</div>
+            <p class="mt-8 text-xs font-bold uppercase tracking-[0.16em] text-[#c8c2b8]">For relief teams</p>
+            <h3 class="mt-3 font-serif text-3xl leading-tight tracking-[-0.035em]">Coordinate the response with clarity.</h3>
+            <p class="mt-4 text-sm leading-7 text-[#d4cfc6]">National, district, and field coordinators can access one workflow for resident and camp requests.</p>
+          </div>
+          <div class="mt-10 border-t border-[#56524b] pt-5">
+            <p class="mb-4 text-xs leading-5 text-[#c8c2b8]">Choose your coordination level, then enter the workspace to accept, dispatch, and track relief.</p>
+            <a routerLink="/coordinator-login" class="inline-flex w-full items-center justify-center rounded-xl bg-[#f4f1e9] px-4 py-3 text-sm font-bold text-[#34322e] transition hover:bg-white">Coordinator sign in <span class="ml-2">→</span></a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="border-t border-[#e3ded5] bg-[#fffdf9]">
+      <div class="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8"><div><p class="font-serif text-2xl tracking-[-0.03em] text-[#34312d]">One request can begin a chain of care.</p><p class="mt-1 text-sm text-[#716b62]">From a person in need to the team ready to help.</p></div><img src="/resqgrid-logo.svg" alt="ResQGrid" class="h-9 w-auto opacity-80" /></div>
+    </section>
   </main>
-
 </div>

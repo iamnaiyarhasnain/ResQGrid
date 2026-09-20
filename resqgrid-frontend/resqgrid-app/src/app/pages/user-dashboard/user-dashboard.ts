@@ -1,301 +1,268 @@
+import { Component, HostListener } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
-  Component,
-  HostListener
-} from '@angular/core';
-
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
-import {
-  HelpRequestService,
   HelpRequestCreateRequest,
-  HelpRequestResponse
+  HelpRequestResponse,
+  HelpRequestService
 } from '../../services/help-request.service';
+import { AuthService, AuthUser } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-dashboard',
-
-  imports: [
-    ReactiveFormsModule
-  ],
-
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './user-dashboard.html',
   styleUrl: './user-dashboard.css'
 })
 export class UserDashboard {
-
-  // Resident help request form
   helpRequestForm: FormGroup;
-
-  // Success message
+  authForm: FormGroup;
   successMessage = '';
-
-  // Error message
   errorMessage = '';
-
-  // Loading state
+  authErrorMessage = '';
   isSubmitting = false;
-
-  // Generated request ID
+  isAuthSubmitting = false;
   requestId: number | null = null;
-
-  // Current network status
   isOnline = navigator.onLine;
-
-  // Number of requests waiting for synchronization
   queuedRequestCount = 0;
+  showAuthPanel = false;
+  authMode: 'register' | 'login' = 'register';
+  currentUser: AuthUser | null;
+  photoData = '';
+  photoName = '';
 
+  readonly disasterTypes = [
+    'Flood', 'Earthquake', 'Cyclone / storm', 'Landslide',
+    'Wildfire', 'Heatwave', 'Industrial accident', 'Other'
+  ];
 
   constructor(
     private formBuilder: FormBuilder,
-    private helpRequestService: HelpRequestService
+    private helpRequestService: HelpRequestService,
+    private authService: AuthService
   ) {
-
-    // Create reactive form
-    this.helpRequestForm =
-      this.formBuilder.group({
-
-        name: [
-          '',
-          Validators.required
-        ],
-
-        location: [
-          '',
-          Validators.required
-        ],
-
-        peopleCount: [
-          '',
-          [
-            Validators.required,
-            Validators.min(1)
-          ]
-        ],
-
-        helpType: [
-          '',
-          Validators.required
-        ],
-
-        priority: [
-          '',
-          Validators.required
-        ],
-
-        description: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(5)
-          ]
-        ]
-
-      });
-
-    // Check if there are already
-    // requests waiting for synchronization.
+    this.currentUser = this.authService.currentUser;
+    this.helpRequestForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      location: ['', Validators.required],
+      peopleCount: ['', [Validators.required, Validators.min(1)]],
+      helpType: ['', Validators.required],
+      priority: ['', Validators.required],
+      disasterType: ['', Validators.required],
+      disasterDetails: [''],
+      description: ['', [Validators.required, Validators.minLength(5)]]
+    });
+    this.authForm = this.formBuilder.group({
+      name: [''],
+      email: [''],
+      phone: [''],
+      identifier: [''],
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    });
     this.updateQueueCount();
+    this.helpRequestService.queuedRequestCount$.subscribe(count => {
+      this.queuedRequestCount = count;
+    });
   }
-
-
-  // ==========================================
-  // INTERNET CONNECTION RESTORED
-  // ==========================================
 
   @HostListener('window:online')
   onOnline(): void {
-
-    // Update network status
     this.isOnline = true;
-
-    // Tell the user that connection is back
-    this.successMessage =
-      ' Connection restored. Syncing offline requests...';
-
-    // Try to send all requests that
-    // were saved while offline.
+    this.successMessage = 'Connection restored. Your saved requests are being synchronised.';
     this.helpRequestService.flushQueuedRequests();
-
-    // Update the number of queued requests
-    this.updateQueueCount();
   }
-
-
-  // ==========================================
-  // INTERNET CONNECTION LOST
-  // ==========================================
 
   @HostListener('window:offline')
   onOffline(): void {
-
-    // Update network status
     this.isOnline = false;
-
-    // Inform the resident
-    this.successMessage =
-      ' You are offline. New requests will be stored safely on this device.';
+    this.successMessage = 'You are offline. New help requests will be saved safely on this device.';
   }
-
-
-  // ==========================================
-  // UPDATE OFFLINE QUEUE COUNT
-  // ==========================================
 
   updateQueueCount(): void {
-
-    this.queuedRequestCount =
-      this.helpRequestService.getQueuedRequestCount();
+    this.queuedRequestCount = this.helpRequestService.getQueuedRequestCount();
   }
 
+  onDisasterTypeChange(): void {
+    const disasterDetails = this.helpRequestForm.get('disasterDetails');
+    if (this.helpRequestForm.get('disasterType')?.value === 'OTHER') {
+      disasterDetails?.setValidators([Validators.required, Validators.minLength(3)]);
+    } else {
+      disasterDetails?.clearValidators();
+      disasterDetails?.setValue('');
+    }
+    disasterDetails?.updateValueAndValidity();
+  }
 
-  // ==========================================
-  // SUBMIT HELP REQUEST
-  // ==========================================
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const photo = input.files?.[0];
+    if (!photo) return;
+
+    if (!photo.type.startsWith('image/')) {
+      this.errorMessage = 'Please choose an image file for the optional reference photo.';
+      input.value = '';
+      return;
+    }
+
+    if (photo.size > 1_500_000) {
+      this.errorMessage = 'Please choose a photo smaller than 1.5 MB so it can be saved offline.';
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.photoData = String(reader.result);
+      this.photoName = photo.name;
+      this.errorMessage = '';
+    };
+    reader.readAsDataURL(photo);
+  }
+
+  removePhoto(): void {
+    this.photoData = '';
+    this.photoName = '';
+  }
+
+  retryQueuedRequests(): void {
+    this.helpRequestService.flushQueuedRequests();
+    this.successMessage = this.isOnline
+      ? 'Trying to send your saved requests now.'
+      : 'Your requests remain safely saved until a connection returns.';
+  }
 
   onSubmit(): void {
-
-    // Clear previous messages
     this.successMessage = '';
     this.errorMessage = '';
-
-    // Clear previous request ID
     this.requestId = null;
 
-
-    // ==========================================
-    // VALIDATE FORM
-    // ==========================================
-
     if (this.helpRequestForm.invalid) {
-
-      // Show validation errors
       this.helpRequestForm.markAllAsTouched();
-
       return;
     }
 
+    const formValue = this.helpRequestForm.value;
+    const request: HelpRequestCreateRequest = {
+      clientRequestId: this.createClientRequestId(),
+      name: formValue.name,
+      location: formValue.location,
+      peopleCount: Number(formValue.peopleCount),
+      helpType: formValue.helpType,
+      priority: formValue.priority,
+      description: formValue.description,
+      disasterType: formValue.disasterType === 'Other' ? 'OTHER' : formValue.disasterType,
+      disasterDetails: formValue.disasterDetails || undefined,
+      photoData: this.photoData || undefined
+    };
 
-    // Prevent duplicate clicks
-    this.isSubmitting = true;
-
-
-    // Get form data
-    const request: HelpRequestCreateRequest =
-      this.helpRequestForm.value;
-
-
-    // ==========================================
-    // CHECK CURRENT NETWORK STATUS
-    // ==========================================
-
-    // IMPORTANT:
-    // Use navigator.onLine directly here.
-    // This checks the browser's CURRENT status
-    // instead of relying only on our variable.
     if (!navigator.onLine) {
-
-      // Save request locally
-      this.helpRequestService.queueRequest(request);
-
-      // Tell user that request was saved
-      this.successMessage =
-        'You are offline. Your request has been saved on this device and will be sent automatically when the connection returns.';
-
-      // Reset form
-      this.helpRequestForm.reset();
-
-      // Stop loading
-      this.isSubmitting = false;
-
-      // Update queue count
-      this.updateQueueCount();
-
+      this.saveRequestOffline(request, 'You are offline. Your request is saved on this device and will be sent automatically when connection returns.');
       return;
     }
 
-
-    // ==========================================
-    // ONLINE MODE
-    // ==========================================
-
-    this.helpRequestService
-      .createHelpRequest(request)
-      .subscribe({
-
-        // ======================================
-        // REQUEST SUCCESS
-        // ======================================
-
-        next: (response: HelpRequestResponse) => {
-
-          // Show success message
-          this.successMessage =
-            ' Your help request has been submitted successfully.';
-
-          // Store generated request ID
-          this.requestId = response.id;
-
-          console.log(
-            'Help request created:',
-            response
-          );
-
-          // Reset form
-          this.helpRequestForm.reset();
-
-          // Stop loading
-          this.isSubmitting = false;
-        },
-
-
-        // ======================================
-        // REQUEST FAILED
-        // ======================================
-
-        error: (error) => {
-
-          console.error(
-            'Request failed:',
-            error
-          );
-
-
-          // Check CURRENT browser connection.
-          // The connection might have disappeared
-          // after the request started.
-          if (!navigator.onLine) {
-
-            // Save request locally
-            this.helpRequestService.queueRequest(request);
-
-            // Tell the user
-            this.successMessage =
-              ' Connection lost. Your request has been saved offline and will be sent automatically when the connection returns.';
-
-            // Reset form
-            this.helpRequestForm.reset();
-
-            // Update queue count
-            this.updateQueueCount();
-
-          } else {
-
-            // Internet is available but
-            // the backend returned an error.
-            this.errorMessage =
-              ' Unable to submit your request. Please try again.';
-          }
-
-
-          // Stop loading
+    this.isSubmitting = true;
+    this.helpRequestService.createHelpRequest(request).subscribe({
+      next: (response: HelpRequestResponse) => {
+        this.successMessage = 'Your help request has been submitted successfully.';
+        this.requestId = response.id;
+        this.resetHelpRequestForm();
+        this.isSubmitting = false;
+      },
+      error: error => {
+        if (this.isConnectivityFailure(error)) {
+          this.saveRequestOffline(request, 'We could not reach relief coordination. Your request is saved safely and will retry automatically.');
+        } else {
+          this.errorMessage = error?.error?.message ?? 'Unable to submit your request. Please try again.';
           this.isSubmitting = false;
         }
+      }
+    });
+  }
 
+  openAuthPanel(mode: 'register' | 'login' = 'register'): void {
+    this.authMode = mode;
+    this.authErrorMessage = '';
+    this.showAuthPanel = true;
+  }
+
+  setAuthMode(mode: 'register' | 'login'): void {
+    this.authMode = mode;
+    this.authErrorMessage = '';
+    this.authForm.reset();
+  }
+
+  onAuthSubmit(): void {
+    this.authErrorMessage = '';
+    const value = this.authForm.value;
+
+    if (this.authMode === 'register') {
+      if (!value.name || (!value.email && !value.phone) || this.authForm.get('password')?.invalid) {
+        this.authForm.markAllAsTouched();
+        this.authErrorMessage = 'Add your name, a password, and either an email address or phone number.';
+        return;
+      }
+      this.isAuthSubmitting = true;
+      this.authService.register({
+        name: value.name,
+        email: value.email || undefined,
+        phone: value.phone || undefined,
+        password: value.password
+      }).subscribe({
+        next: response => this.completeAuthentication(response.user),
+        error: error => this.handleAuthError(error)
       });
+      return;
+    }
+
+    if (!value.identifier || this.authForm.get('password')?.invalid) {
+      this.authForm.markAllAsTouched();
+      this.authErrorMessage = 'Enter your email or phone number and password.';
+      return;
+    }
+    this.isAuthSubmitting = true;
+    this.authService.login(value.identifier, value.password).subscribe({
+      next: response => this.completeAuthentication(response.user),
+      error: error => this.handleAuthError(error)
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.currentUser = null;
+    this.successMessage = 'You have signed out. You can still submit an emergency request without an account.';
+  }
+
+  private completeAuthentication(user: AuthUser): void {
+    this.currentUser = user;
+    this.showAuthPanel = false;
+    this.isAuthSubmitting = false;
+    this.successMessage = `Welcome, ${user.name}. Your account is ready.`;
+  }
+
+  private handleAuthError(error: any): void {
+    this.authErrorMessage = error?.error?.message ?? 'We could not complete that request. Please try again.';
+    this.isAuthSubmitting = false;
+  }
+
+  private saveRequestOffline(request: HelpRequestCreateRequest, message: string): void {
+    this.helpRequestService.queueRequest(request);
+    this.successMessage = message;
+    this.resetHelpRequestForm();
+    this.isSubmitting = false;
+  }
+
+  private resetHelpRequestForm(): void {
+    this.helpRequestForm.reset();
+    this.removePhoto();
+    this.onDisasterTypeChange();
+  }
+
+  private isConnectivityFailure(error: any): boolean {
+    return !navigator.onLine || error?.status === 0 || error?.name === 'TimeoutError';
+  }
+
+  private createClientRequestId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return `rq-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 }

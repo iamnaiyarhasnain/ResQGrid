@@ -12,6 +12,10 @@ public class HelpRequestResponse {
     private String helpType;
     private Priority priority;
     private String description;
+    private String disasterType;
+    private String disasterDetails;
+    private String photoData;
+    private String clientRequestId;
     private RequestStatus status;
 
     public HelpRequestResponse() {
@@ -25,6 +29,10 @@ public class HelpRequestResponse {
             String helpType,
             Priority priority,
             String description,
+            String disasterType,
+            String disasterDetails,
+            String photoData,
+            String clientRequestId,
             RequestStatus status) {
 
         this.id = id;
@@ -34,6 +42,10 @@ public class HelpRequestResponse {
         this.helpType = helpType;
         this.priority = priority;
         this.description = description;
+        this.disasterType = disasterType;
+        this.disasterDetails = disasterDetails;
+        this.photoData = photoData;
+        this.clientRequestId = clientRequestId;
         this.status = status;
     }
 
@@ -92,6 +104,18 @@ public class HelpRequestResponse {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getDisasterType() { return disasterType; }
+    public void setDisasterType(String disasterType) { this.disasterType = disasterType; }
+
+    public String getDisasterDetails() { return disasterDetails; }
+    public void setDisasterDetails(String disasterDetails) { this.disasterDetails = disasterDetails; }
+
+    public String getPhotoData() { return photoData; }
+    public void setPhotoData(String photoData) { this.photoData = photoData; }
+
+    public String getClientRequestId() { return clientRequestId; }
+    public void setClientRequestId(String clientRequestId) { this.clientRequestId = clientRequestId; }
 
     public RequestStatus getStatus() {
         return status;

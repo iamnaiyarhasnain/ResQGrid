@@ -1,24 +1,29 @@
-<div class="min-h-screen bg-slate-50">
+<div class="min-h-screen bg-[#f7f5f0]">
 
   <!-- Header -->
-  <header class="bg-slate-900 text-white">
-    <div class="max-w-7xl mx-auto px-6 py-5">
+  <header class="border-b border-[#e2ddd4] bg-[#fffdf8] text-[#2b2a27]">
+    <div class="max-w-7xl mx-auto px-6 py-4">
 
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <div>
-          <h1 class="text-2xl font-bold">
-            ResQGrid
-          </h1>
-
-          <p class="text-slate-300 text-sm">
-            Keeping Relief Connected When Networks Fail.
-          </p>
+        <div class="flex items-center gap-3">
+          <img src="/resqgrid-logo.svg" alt="ResQGrid" class="h-10 w-auto" />
+          <div class="hidden border-l border-[#ddd8cf] pl-3 sm:block">
+            <p class="text-xs font-bold uppercase tracking-[0.12em] text-[#787268]">
+              {{ coordinatorTitle }} desk
+            </p>
+            <p class="mt-0.5 text-xs text-[#777167]">
+              Relief coordination workspace
+            </p>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2 text-sm">
-          <span class="w-3 h-3 bg-green-400 rounded-full"></span>
-          System Online
+        <div class="flex items-center gap-4 text-sm">
+          <a routerLink="/user" class="hidden font-semibold text-[#5d594f] hover:text-[#282724] sm:inline">Resident desk</a>
+          <div class="flex items-center gap-2 rounded-full bg-[#e6ece4] px-3 py-1.5 text-xs font-bold text-[#517054]">
+            <span class="w-2 h-2 bg-[#759b78] rounded-full"></span>
+            System online
+          </div>
         </div>
 
       </div>
@@ -32,11 +37,15 @@
     <!-- Heading -->
     <div class="mb-8">
 
-      <h2 class="text-3xl font-bold text-slate-900">
-        Coordinator Dashboard
+      <p class="text-xs font-bold uppercase tracking-[0.15em] text-[#7a746a]">
+        {{ coordinatorTitle }} desk
+      </p>
+
+      <h2 class="mt-2 font-serif text-4xl font-bold tracking-[-0.04em] text-[#302e2a]">
+        Response overview
       </h2>
 
-      <p class="text-slate-600 mt-2">
+      <p class="text-[#686258] mt-2">
         Monitor resident emergencies and camp supply requirements.
       </p>
 

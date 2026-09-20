@@ -5,13 +5,14 @@ import com.solostack.resqgrid.dto.SupplyRequestResponse;
 import com.solostack.resqgrid.entity.Priority;
 import com.solostack.resqgrid.entity.RequestStatus;
 import com.solostack.resqgrid.service.SupplyRequestService;
+import com.solostack.resqgrid.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 // Tells Spring that this class handles REST API requests
 @RestController
 // Base URL for all supply-request APIs
@@ -20,11 +21,14 @@ public class SupplyRequestController {
 
     // Controller needs the Service layer
     private final SupplyRequestService supplyRequestService;
+    private final AuthService authService;
 
     // Constructor Dependency Injection
     public SupplyRequestController(
-            SupplyRequestService supplyRequestService) {
+            SupplyRequestService supplyRequestService,
+            AuthService authService) {
         this.supplyRequestService = supplyRequestService;
+        this.authService = authService;
     }
 
     // POST /api/requests
@@ -39,7 +43,10 @@ public class SupplyRequestController {
     // GET /api/requests
 // Returns all supply requests.
     @GetMapping
-    public List<SupplyRequestResponse> getAllRequests() {
+    public List<SupplyRequestResponse> getAllRequests(
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Service returns a list of Response DTOs.
         // We send those DTOs to the client.
@@ -50,7 +57,10 @@ public class SupplyRequestController {
 // Returns one supply request as a DTO.
     @GetMapping("/{id}")
     public SupplyRequestResponse getRequestById(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Ask the Service for the requested DTO
         return supplyRequestService.getRequestById(id);
@@ -62,7 +72,10 @@ public class SupplyRequestController {
     @PatchMapping("/{id}/status")
     public SupplyRequestResponse updateStatus(
             @PathVariable Long id,
-            @RequestParam RequestStatus status) {
+            @RequestParam RequestStatus status,
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Send the request ID and new status to the Service.
         return supplyRequestService.updateStatus(id, status);
@@ -73,7 +86,10 @@ public class SupplyRequestController {
 // Returns all requests having the specified priority.
     @GetMapping("/priority/{priority}")
     public List<SupplyRequestResponse> getRequestsByPriority(
-            @PathVariable Priority priority) {
+            @PathVariable Priority priority,
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Service returns Response DTOs.
         return supplyRequestService.getRequestsByPriority(
@@ -87,7 +103,10 @@ public class SupplyRequestController {
     @GetMapping("/filter")
     public List<SupplyRequestResponse> getRequestsByPriorityAndStatus(
             @RequestParam Priority priority,
-            @RequestParam RequestStatus status) {
+            @RequestParam RequestStatus status,
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Service returns Response DTOs.
         return supplyRequestService
@@ -102,7 +121,10 @@ public class SupplyRequestController {
 // Returns requests page by page using Response DTOs.
     @GetMapping("/page")
     public Page<SupplyRequestResponse> getRequestsWithPagination(
-            Pageable pageable) {
+            Pageable pageable,
+            @RequestHeader("Authorization") String authorization) {
+
+        authService.requireCoordinator(authorization);
 
         // Send pagination information to the Service.
         return supplyRequestService.getAllRequests(pageable);
