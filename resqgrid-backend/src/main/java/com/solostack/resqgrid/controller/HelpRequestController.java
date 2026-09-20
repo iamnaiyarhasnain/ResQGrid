@@ -41,7 +41,11 @@ public class HelpRequestController {
     // Get all resident help requests
     @GetMapping
     public List<HelpRequestResponse> getAllHelpRequests(
-            @RequestHeader("Authorization") String authorization) {
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+
+        if (authorization == null || authorization.isBlank()) {
+            return java.util.Collections.emptyList();
+        }
 
         authService.requireCoordinator(authorization);
 

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -23,15 +24,14 @@ public class SupplyRequestController {
     private final SupplyRequestService supplyRequestService;
     private final AuthService authService;
 
-    // Constructor Dependency Injection
     public SupplyRequestController(
             SupplyRequestService supplyRequestService,
             AuthService authService) {
+
         this.supplyRequestService = supplyRequestService;
         this.authService = authService;
     }
 
-    // POST /api/requests
 // Creates a new supply request.
     @PostMapping
     public SupplyRequestResponse createRequest(
@@ -44,7 +44,12 @@ public class SupplyRequestController {
 // Returns all supply requests.
     @GetMapping
     public List<SupplyRequestResponse> getAllRequests(
-            @RequestHeader("Authorization") String authorization) {
+            @RequestHeader(value = "Authorization", required = false) String authorization) {
+
+        if (authorization == null || authorization.isBlank()) {
+            // Health check probe from ALB / monitor
+            return Collections.emptyList();
+        }
 
         authService.requireCoordinator(authorization);
 
