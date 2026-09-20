@@ -1,0 +1,189 @@
+<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
+  <!-- Navigation Header -->
+  <header class="border-b border-[#e2ddd4] bg-[#fffdf8]/95 sticky top-0 z-40 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-5 px-6 py-4 lg:px-8">
+      <a routerLink="/user" class="flex items-center gap-2" aria-label="AidLinkX Home">
+        <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-10 w-auto" />
+      </a>
+      <div class="flex items-center gap-3">
+        <a routerLink="/user" class="inline-flex items-center gap-1.5 rounded-lg border border-[#d7d1c7] bg-white px-3.5 py-2 text-xs font-bold text-[#44413b] transition hover:bg-[#f4f1ea] sm:text-sm">
+          <span>←</span> Return to Resident Help Desk
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-6 py-12 lg:px-8">
+    <!-- Header Banner -->
+    <div class="mb-8">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[#ded8cc] bg-[#fbf9f4] px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#6d675c]">
+        <span class="h-2 w-2 rounded-full bg-[#10b981]"></span> Continuous Humanitarian Improvement
+      </span>
+      <h1 class="mt-3 font-serif text-4xl font-bold tracking-tight text-[#1c1b18] sm:text-5xl">
+        Share Relief Feedback &amp; Suggestions
+      </h1>
+      <p class="mt-3 text-base leading-relaxed text-[#686257]">
+        Whether you are a resident who received aid, an on-ground volunteer, or a camp representative, your voice helps AidLinkX improve rescue response times, resource allocation, and app reliability.
+      </p>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (successMessage) {
+      <div class="mb-8 rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] p-5 shadow-sm text-[#166534]">
+        <div class="flex items-start gap-3">
+          <span class="text-2xl">✓</span>
+          <div>
+            <h3 class="font-bold text-base">Feedback Received</h3>
+            <p class="mt-1 text-sm leading-6">{{ successMessage }}</p>
+            <div class="mt-4">
+              <a routerLink="/user" class="inline-flex items-center text-xs font-bold underline hover:text-[#14532d]">Back to Emergency Help Desk →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="mb-8 rounded-2xl border border-[#fecaca] bg-[#fef2f2] p-5 shadow-sm text-[#991b1b]">
+        <div class="flex items-start gap-3">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <h3 class="font-bold text-sm">Submission Error</h3>
+            <p class="mt-1 text-sm">{{ errorMessage }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Feedback Form Card -->
+    <div class="rounded-[2rem] border border-[#e4ded4] bg-[#fffdf9] p-7 shadow-[0_12px_45px_rgba(40,36,29,0.06)] sm:p-10">
+      <form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()" novalidate class="space-y-6">
+
+        <!-- Rating Section -->
+        <div>
+          <label class="block text-sm font-bold text-[#3c3933] mb-2">
+            Overall Experience Rating <span class="text-red-500">*</span>
+          </label>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-1.5 bg-[#f5f2eb] p-2 rounded-xl border border-[#ded7ca]">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <button
+                  type="button"
+                  (click)="setRating(star)"
+                  (mouseenter)="hoverRating = star"
+                  (mouseleave)="hoverRating = 0"
+                  [attr.aria-label]="star + ' stars'"
+                  class="text-2xl transition-transform hover:scale-125 focus:outline-none"
+                >
+                  <span [class]="(hoverRating || selectedRating) >= star ? 'text-amber-500' : 'text-slate-300'">★</span>
+                </button>
+              }
+            </div>
+            <span class="text-xs font-semibold text-[#666055] px-2 py-1 rounded bg-[#ece7dc]">
+              {{ ratingLabels[hoverRating || selectedRating] }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label for="category" class="block text-sm font-bold text-[#3c3933] mb-2">
+            What is this feedback related to? <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="category"
+            formControlName="category"
+            class="w-full rounded-xl border border-[#d8d1c5] bg-white px-4 py-3 text-sm text-[#2b2a26] outline-none transition focus:border-[#4a473f] focus:ring-4 focus:ring-[#e8e4db]"
+          >
+            @for (cat of feedbackCategories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Name & Email (Optional for guests, prefilled for signed-in) -->
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="feedbackName" class="block text-sm font-bold text-[#3c3933] mb-2">
+              Your Name <span class="text-xs font-normal text-[#807a6f]">(Optional)</span>
+            </label>
+            <input
+              id="feedbackName"
+              type="text"
+              formControlName="name"
+              placeholder="e.g. Rahul Sharma or Anonymous"
+              class="w-full rounded-xl border border-[#d8d1c5] bg-white px-4 py-3 text-sm text-[#2b2a26] outline-none transition placeholder:text-[#aba498] focus:border-[#4a473f] focus:ring-4 focus:ring-[#e8e4db]"
+            />
+          </div>
+
+          <div>
+            <label for="feedbackEmail" class="block text-sm font-bold text-[#3c3933] mb-2">
+              Email Address <span class="text-xs font-normal text-[#807a6f]">(Optional for follow-up)</span>
+            </label>
+            <input
+              id="feedbackEmail"
+              type="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              class="w-full rounded-xl border border-[#d8d1c5] bg-white px-4 py-3 text-sm text-[#2b2a26] outline-none transition placeholder:text-[#aba498] focus:border-[#4a473f] focus:ring-4 focus:ring-[#e8e4db]"
+            />
+            @if (feedbackForm.get('email')?.invalid && feedbackForm.get('email')?.touched) {
+              <p class="mt-1 text-xs text-red-600 font-medium">Please enter a valid email address.</p>
+            }
+          </div>
+        </div>
+
+        <!-- Message Details -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="message" class="block text-sm font-bold text-[#3c3933]">
+              Your Comments or Suggestions <span class="text-red-500">*</span>
+            </label>
+            <span class="text-xs text-[#878175]">
+              {{ feedbackForm.get('message')?.value?.length || 0 }}/1000 characters
+            </span>
+          </div>
+          <textarea
+            id="message"
+            rows="5"
+            formControlName="message"
+            placeholder="Describe what went well, what challenges occurred, or ideas to improve AidLinkX relief services..."
+            class="w-full resize-y rounded-xl border border-[#d8d1c5] bg-white px-4 py-3 text-sm text-[#2b2a26] outline-none transition placeholder:text-[#aba498] focus:border-[#4a473f] focus:ring-4 focus:ring-[#e8e4db]"
+          ></textarea>
+          @if (feedbackForm.get('message')?.invalid && feedbackForm.get('message')?.touched) {
+            <p class="mt-1 text-xs text-red-600 font-medium">Please provide at least 8 characters explaining your feedback.</p>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#24221e] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#3d3a33] disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#d8d3c9]"
+        >
+          @if (isSubmitting) {
+            <span>Submitting your feedback...</span>
+          } @else {
+            <span>Submit Feedback</span>
+            <span aria-hidden="true">→</span>
+          }
+        </button>
+
+        <p class="text-center text-xs text-[#807a70]">
+          AidLinkX humanitarian operations are reviewed in real-time by national &amp; field response teams.
+        </p>
+      </form>
+    </div>
+
+    <!-- Quick Help Note -->
+    <div class="mt-8 flex items-center justify-between rounded-2xl border border-[#ded8cc] bg-[#f5f2ea] p-5 text-sm">
+      <div>
+        <p class="font-bold text-[#2e2b26]">Experiencing an active emergency?</p>
+        <p class="text-xs text-[#6e685d] mt-0.5">Do not wait for feedback review. Call 112 or submit an immediate rescue request.</p>
+      </div>
+      <a routerLink="/user" class="shrink-0 rounded-lg bg-[#24221e] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#3d3a33]">
+        Request Aid Now
+      </a>
+    </div>
+  </main>
+</div>

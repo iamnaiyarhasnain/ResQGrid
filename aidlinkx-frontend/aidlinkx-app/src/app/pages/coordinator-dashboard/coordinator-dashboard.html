@@ -1,0 +1,358 @@
+<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
+
+  <!-- Header -->
+  <header class="border-b border-[#e2ddd4] bg-[#fffdf8] sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 w-auto" />
+          <div class="border-l border-[#ded8cb] pl-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-[#736d62]">
+              {{ coordinatorTitle }}
+            </p>
+            <p class="text-[11px] text-[#7a7469]">
+              Relief Dispatch &amp; Operations Command
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs sm:text-sm">
+          <a routerLink="/user" class="font-bold text-[#5c564c] hover:text-[#1c1b18] px-2.5 py-1.5 rounded-lg hover:bg-[#ede8dc] transition">
+            Resident Help Desk
+          </a>
+          <a routerLink="/feedback" class="font-bold text-[#5c564c] hover:text-[#1c1b18] px-2.5 py-1.5 rounded-lg hover:bg-[#ede8dc] transition">
+            View Feedback
+          </a>
+          <button
+            type="button"
+            (click)="logout()"
+            class="rounded-lg border border-[#d6cfc3] bg-white px-3 py-1.5 font-bold text-[#44413b] hover:bg-[#ede8dc] transition"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Photo Preview Modal -->
+  @if (activePhoto) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" (click)="closePhoto()">
+      <div class="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl bg-white p-2" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          (click)="closePhoto()"
+          class="absolute top-4 right-4 z-10 rounded-full bg-black/60 text-white px-3 py-1 text-sm font-bold hover:bg-black"
+        >
+          ✕ Close
+        </button>
+        <img [src]="activePhoto" alt="Resident Disaster Reference Photo" class="max-h-[85vh] w-auto rounded-xl object-contain mx-auto" />
+      </div>
+    </div>
+  }
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Title & Controls -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#fbeae7] border border-[#f5c7be] px-3 py-1 text-xs font-bold text-[#b91c1c]">
+          <span class="h-2 w-2 rounded-full bg-[#dc2626] animate-pulse"></span>
+          Live Tactical Coordination
+        </span>
+        <h1 class="mt-2 font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#1c1b18]">
+          Response Command Overview
+        </h1>
+        <p class="text-xs sm:text-sm text-[#666055] mt-1">
+          Real-time triage of civilian distress calls and camp resource requests across the AidLinkX grid.
+        </p>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="flex items-center gap-2">
+        <label for="priorityFilter" class="text-xs font-bold text-[#44413b]">Filter Urgency:</label>
+        <select
+          id="priorityFilter"
+          class="border border-[#d8d1c5] rounded-xl px-3.5 py-2 text-xs font-bold bg-white text-[#24221e] outline-none focus:ring-2 focus:ring-[#24221e]"
+          (change)="onPriorityFilterChange($event)"
+        >
+          <option value="ALL">All Priorities</option>
+          <option value="CRITICAL">🔴 Critical Only</option>
+          <option value="HIGH">🟠 High Only</option>
+          <option value="NORMAL">🟢 Normal Only</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
+        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Civilian Help Calls</p>
+        <p class="text-3xl font-extrabold text-[#1c1b18] mt-2">{{ totalHelpRequests }}</p>
+        <span class="text-[11px] text-red-600 font-semibold">{{ criticalHelpRequests }} critical rescues</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
+        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Camp Supply Demands</p>
+        <p class="text-3xl font-extrabold text-[#1c1b18] mt-2">{{ totalRequests }}</p>
+        <span class="text-[11px] text-amber-600 font-semibold">{{ pendingRequests }} awaiting dispatch</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
+        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Pending Tasks</p>
+        <p class="text-3xl font-extrabold text-amber-600 mt-2">{{ pendingRequests }}</p>
+        <span class="text-[11px] text-[#736d62]">Awaiting first responder action</span>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
+        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Aids Delivered</p>
+        <p class="text-3xl font-extrabold text-emerald-600 mt-2">{{ deliveredRequests }}</p>
+        <span class="text-[11px] text-emerald-700 font-semibold">Completed relief missions</span>
+      </div>
+    </div>
+
+    <!-- Section 1: RESIDENT HELP REQUESTS -->
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-4 border-b border-[#e2ddd4] pb-3">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#1c1b18] flex items-center gap-2">
+            <span>🆘</span> Resident Distress &amp; Rescue Requests
+          </h2>
+          <p class="text-xs text-[#6e685c] mt-0.5">Direct SOS submissions from trapped citizens and affected families.</p>
+        </div>
+        <span class="text-xs font-bold text-[#5c564c] bg-[#ede7dc] px-3 py-1 rounded-full">
+          {{ filteredHelpRequests.length }} requests
+        </span>
+      </div>
+
+      @if (filteredHelpRequests.length === 0) {
+        <div class="bg-white rounded-2xl border border-[#e4ded4] p-8 text-center">
+          <span class="text-4xl">🕊️</span>
+          <p class="text-sm font-bold text-[#3c3933] mt-2">No active distress requests matching current filter.</p>
+        </div>
+      }
+
+      <div class="space-y-4">
+        @for (request of filteredHelpRequests; track request.id) {
+          <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 sm:p-6 shadow-sm transition hover:shadow-md">
+            
+            <!-- Top Row: ID, Priority, Status, Timestamp -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#f0ece3] pb-4 mb-4">
+              <div class="flex items-center gap-3 flex-wrap">
+                <span class="text-base font-extrabold text-[#1c1b18]">
+                  SOS #{{ request.id }}
+                </span>
+                <span [class]="getPriorityClasses(request.priority)">
+                  {{ request.priority }}
+                </span>
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#f0ede6] text-[#444038]">
+                  🌪️ {{ request.disasterType }}
+                </span>
+              </div>
+
+              <div class="text-xs flex items-center gap-2">
+                <span class="text-[#736d62]">Lifecycle Status:</span>
+                <span [class]="getStatusClasses(request.status)">
+                  {{ request.status }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Middle Grid: Contact, Location, People, Special Needs -->
+            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4 text-xs">
+              <!-- Contact -->
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64] font-bold">Resident Contact</p>
+                <p class="font-extrabold text-sm text-[#1c1b18] mt-0.5">{{ request.name }}</p>
+                <div class="mt-1">
+                  @if (request.contactPhone) {
+                    <a [href]="'tel:' + request.contactPhone" class="font-bold text-[#b91c1c] hover:underline flex items-center gap-1">
+                      <span>📞</span> {{ request.contactPhone }}
+                    </a>
+                  }
+                  @if (request.alternateContact) {
+                    <p class="text-[#736d62] text-[11px] mt-0.5">Alt: {{ request.alternateContact }}</p>
+                  }
+                </div>
+              </div>
+
+              <!-- Location & Landmark -->
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64] font-bold">Location &amp; Access</p>
+                <p class="font-extrabold text-[#1c1b18] mt-0.5 text-xs">{{ request.location }}</p>
+                @if (request.landmark) {
+                  <p class="text-[11px] text-[#555047] font-semibold mt-1">Landmark: {{ request.landmark }}</p>
+                }
+              </div>
+
+              <!-- People & Aid Type -->
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64] font-bold">People &amp; Requirement</p>
+                <p class="font-extrabold text-sm text-[#1c1b18] mt-0.5">
+                  {{ request.peopleCount }} person(s)
+                </p>
+                <p class="text-[#b91c1c] font-bold mt-1 uppercase text-[11px]">
+                  Aid: {{ request.helpType }}
+                </p>
+              </div>
+
+              <!-- Special Needs / Vulnerabilities -->
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64] font-bold">Vulnerabilities</p>
+                @if (request.specialNeeds) {
+                  <p class="text-[#991b1b] font-bold text-xs mt-1">
+                    ⚠️ {{ request.specialNeeds }}
+                  </p>
+                } @else {
+                  <p class="text-[#756f64] mt-1 text-xs">Standard emergency</p>
+                }
+              </div>
+            </div>
+
+            <!-- Disaster Details (if specified) -->
+            @if (request.disasterDetails) {
+              <div class="bg-[#fff8e6] border border-[#fed7aa] p-3 rounded-xl text-xs text-[#9a3412] mb-4">
+                <strong>Specific Disaster Context:</strong> {{ request.disasterDetails }}
+              </div>
+            }
+
+            <!-- Situation Description -->
+            <div class="bg-[#fcfbf9] border border-[#ece6db] p-3.5 rounded-xl text-xs text-[#444038] mb-4">
+              <span class="font-bold text-[#1c1b18]">Situation Report: </span>
+              {{ request.description }}
+            </div>
+
+            <!-- Optional Attached Photo Section & Action Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
+              <div>
+                @if (request.photoData) {
+                  <button
+                    type="button"
+                    (click)="openPhoto(request.photoData)"
+                    class="inline-flex items-center gap-2 rounded-xl border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-xs font-bold text-[#1e293b] hover:bg-[#e2e8f0] transition"
+                  >
+                    <span>📷</span>
+                    <span>View Reference Photo</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Workflow Transition Buttons -->
+              <div>
+                @if (getNextHelpStatus(request.status); as nextStatus) {
+                  <button
+                    type="button"
+                    [disabled]="updatingHelpRequestId === request.id"
+                    (click)="updateHelpRequestStatus(request, nextStatus)"
+                    class="rounded-xl bg-[#24221e] hover:bg-[#3d3a33] text-white px-5 py-2.5 text-xs font-bold transition shadow-sm disabled:opacity-50"
+                  >
+                    @if (updatingHelpRequestId === request.id) {
+                      Updating...
+                    } @else {
+                      {{ getHelpActionText(request.status) }} →
+                    }
+                  </button>
+                } @else {
+                  <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-2 text-xs font-bold">
+                    ✓ Mission Completed &amp; Delivered
+                  </span>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Section 2: CAMP SUPPLY REQUESTS -->
+    <section>
+      <div class="flex items-center justify-between mb-4 border-b border-[#e2ddd4] pb-3">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#1c1b18] flex items-center gap-2">
+            <span>📦</span> Relief Camp Logistics &amp; Supply Orders
+          </h2>
+          <p class="text-xs text-[#6e685c] mt-0.5">Bulk food, water, medical and bedding requirements submitted by camp managers.</p>
+        </div>
+        <span class="text-xs font-bold text-[#5c564c] bg-[#ede7dc] px-3 py-1 rounded-full">
+          {{ filteredRequests.length }} requests
+        </span>
+      </div>
+
+      @if (filteredRequests.length === 0) {
+        <div class="bg-white rounded-2xl border border-[#e4ded4] p-8 text-center">
+          <span class="text-4xl">📦</span>
+          <p class="text-sm font-bold text-[#3c3933] mt-2">No camp supply requests found.</p>
+        </div>
+      }
+
+      <div class="space-y-4">
+        @for (request of filteredRequests; track request.id) {
+          <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 sm:p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#f0ece3] pb-3 mb-4">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold text-sm text-[#1c1b18]">Supply Order #{{ request.id }}</span>
+                <span class="text-xs font-bold bg-[#f5f2eb] px-2 py-0.5 rounded border border-[#ded8cb]">Camp: {{ request.campId }}</span>
+                <span [class]="getPriorityClasses(request.priority)">{{ request.priority }}</span>
+              </div>
+              <div class="text-xs">
+                <span class="text-[#736d62]">Status:</span>
+                <span [class]="getStatusClasses(request.status)">{{ request.status }}</span>
+              </div>
+            </div>
+
+            <!-- Resource Quantities Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4 text-xs">
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64]">People Affected</p>
+                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.peopleAffected }}</p>
+              </div>
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64]">💧 Water (L)</p>
+                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.waterQuantity }}</p>
+              </div>
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64]">🍲 Food Packs</p>
+                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.foodQuantity }}</p>
+              </div>
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64]">💊 Med Kits</p>
+                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.medicineQuantity }}</p>
+              </div>
+              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
+                <p class="text-[#756f64]">🛌 Blankets</p>
+                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.blanketQuantity }}</p>
+              </div>
+            </div>
+
+            <!-- Action -->
+            <div class="flex justify-end">
+              @if (getNextStatus(request.status); as nextStatus) {
+                <button
+                  type="button"
+                  [disabled]="updatingRequestId === request.id"
+                  (click)="updateRequestStatus(request, nextStatus)"
+                  class="rounded-xl bg-[#24221e] hover:bg-[#3d3a33] text-white px-5 py-2 text-xs font-bold transition disabled:opacity-50"
+                >
+                  @if (updatingRequestId === request.id) {
+                    Updating...
+                  } @else {
+                    @if (request.status === 'PENDING') { Accept Supply Order }
+                    @if (request.status === 'ACCEPTED') { Dispatch Camp Shipment }
+                    @if (request.status === 'DISPATCHED') { Confirm Delivery }
+                  }
+                </button>
+              } @else {
+                <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 text-xs font-bold">
+                  ✓ Supplies Delivered to Camp
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+  </main>
+</div>

@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
+  <!-- Header -->
+  <header class="bg-[#fffdf8] border-b border-[#e2ddd4] px-6 py-4 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a routerLink="/user">
+          <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 w-auto" />
+        </a>
+        <div class="border-l border-[#ded8cb] pl-3">
+          <h1 class="text-xs font-bold uppercase tracking-wider text-[#736d62]">
+            Relief Camp Portal
+          </h1>
+          <p class="text-[11px] text-[#7a7469]">
+            Supply &amp; Shelter Management
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs">
+        <a routerLink="/user" class="font-bold text-[#575147] hover:text-[#1c1b18]">
+          Resident Help Desk
+        </a>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-bold text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Camp Node Online
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-6 py-10">
+    <section class="mb-8">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#ede7dc] px-3 py-1 text-xs font-bold text-[#5c564c]">
+        ⛺ Ground Logistics Point
+      </span>
+      <h2 class="mt-2 text-3xl font-serif font-bold text-[#1c1b18]">
+        Camp Worker Operations
+      </h2>
+      <p class="mt-1 text-sm text-[#666055]">
+        Broadcast urgent food, water, medicine and blanket quotas directly to district coordinators.
+      </p>
+    </section>
+
+    <!-- Camp Information Card -->
+    <section class="bg-white rounded-2xl border border-[#e4ded4] p-6 mb-8 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[#787165]">Designated Shelter Facility</p>
+          <h3 class="text-2xl font-serif font-bold text-[#1c1b18] mt-1">Shelter Camp Alpha-09</h3>
+          <p class="text-xs text-[#706a5e] mt-0.5">District High School Grounds, Ward 4</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
+          Active Intake Hub
+        </span>
+      </div>
+    </section>
+
+    <!-- Create Request Action Card -->
+    <section class="bg-white rounded-3xl border border-[#e4ded4] p-10 text-center shadow-sm">
+      <div class="text-5xl mb-3">📦</div>
+      <h3 class="text-2xl font-serif font-bold text-[#1c1b18]">
+        Need Emergency Supplies for Evacuees?
+      </h3>
+      <p class="text-sm text-[#666055] mt-2 mb-6 max-w-lg mx-auto">
+        Specify exact quantities of drinking water, meal packs, pediatric/diabetic medicines, and dry blankets.
+      </p>
+
+      <a
+        routerLink="/create-request"
+        class="inline-flex items-center gap-2 px-7 py-3.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-bold rounded-xl shadow-md hover:shadow-lg transition"
+      >
+        <span>🚨 Create Supply Request</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </section>
+  </main>
+</div>
