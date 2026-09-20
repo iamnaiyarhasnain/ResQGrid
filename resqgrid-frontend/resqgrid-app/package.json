@@ -1,0 +1,8 @@
+{
+  "name": "resqgrid-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node -e \"const fs=require('fs'),cp=require('child_process'),path=require('path'); const target=path.resolve(__dirname,'../../aidlinkx-frontend/aidlinkx-app'); cp.execSync('npm run build',{cwd:target,stdio:'inherit'}); const src=path.join(target,'dist/aidlinkx-app/browser'); const dest1=path.resolve(__dirname,'dist/resqgrid-app'); const dest2=path.resolve(__dirname,'dist/aidlinkx-app/browser'); fs.mkdirSync(dest1,{recursive:true}); fs.cpSync(src,dest1,{recursive:true}); fs.mkdirSync(dest2,{recursive:true}); fs.cpSync(src,dest2,{recursive:true});\""
+  }
+}

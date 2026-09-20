@@ -1,0 +1,40 @@
+version: 1
+applications:
+  - appRoot: aidlinkx-frontend/aidlinkx-app
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm use 22 || nvm use 20 || true
+            - npm ci --prefer-offline --no-audit
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: dist/aidlinkx-app/browser
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - .npm/**/*
+
+  # Backward-compatible application configuration if Amplify Console still points to the old appRoot
+  - appRoot: resqgrid-frontend/resqgrid-app
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm use 22 || nvm use 20 || true
+            - npm ci --prefer-offline --no-audit
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: dist/aidlinkx-app/browser
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - .npm/**/*
