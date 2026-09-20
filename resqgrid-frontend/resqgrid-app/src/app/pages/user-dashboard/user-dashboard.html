@@ -20,12 +20,12 @@
           <span class="hidden sm:inline">{{ isOnline ? 'Grid Online' : 'Offline Mode' }}</span>
         </span>
 
-        <!-- Language Selector Badge -->
-        <div class="hidden lg:flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg">
-          <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <!-- Offline-First Resilience Pill -->
+        <div class="hidden xl:flex items-center gap-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-2.5 py-1 text-xs text-blue-700 dark:text-blue-300">
+          <svg class="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span>English (EN)</span>
+          <span class="font-medium">100% Offline-Ready</span>
         </div>
 
         <!-- Dark / Light Theme Toggle Button -->
@@ -137,6 +137,40 @@
 
   <!-- ==================== MAIN HERO & DASHBOARD ==================== -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ==================== OFFLINE-READY CRISIS GRID HERO BANNER ==================== -->
+    <div class="mb-6 rounded-2xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-r from-blue-50 via-white to-indigo-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/40 p-4 sm:p-5 shadow-sm">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shrink-0 mt-0.5">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                AidLinkX Humanitarian Emergency Grid
+              </h2>
+              <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/60 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-300">
+                Works Offline Without Internet
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+              <strong>Offline-First Resilience:</strong> This platform is engineered to function fully without internet or cellular connectivity &mdash; your emergency distress requests are stored securely on your local device and will automatically dispatch to NDRF coordinators the moment any connection is restored.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
+          <span [class]="isOnline 
+            ? 'inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300' 
+            : 'inline-flex items-center gap-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300'">
+            <span [class]="isOnline ? 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse' : 'h-2 w-2 rounded-full bg-amber-500'"></span>
+            <span>{{ isOnline ? 'Grid Online (Live Dispatch)' : 'Offline Mode Active (Cached)' }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
 
     <!-- Top Notifications -->
     @if (successMessage) {
@@ -541,42 +575,51 @@
                 Real-time regional situation briefings across monitored states.
               </p>
             </div>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
-              4 Active
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+              {{ disasterZones.length }} Active Briefings
             </span>
           </div>
 
           <div class="space-y-4">
             @for (zone of disasterZones; track zone.id) {
-              <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col sm:flex-row gap-3 bg-slate-50/50 dark:bg-slate-800/40">
-                <img
-                  [src]="zone.imageUrl"
-                  [alt]="zone.title"
-                  class="h-32 sm:h-auto sm:w-36 object-cover shrink-0"
-                />
-                <div class="p-3 flex flex-col justify-between flex-1">
+              <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col sm:flex-row bg-slate-50/60 dark:bg-slate-800/40">
+                <div class="relative h-40 sm:h-auto sm:w-44 shrink-0 overflow-hidden bg-slate-200 dark:bg-slate-700">
+                  <img
+                    [src]="zone.imageUrl"
+                    [alt]="zone.title"
+                    loading="lazy"
+                    class="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                  <span class="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur">
+                    {{ zone.disasterType }}
+                  </span>
+                </div>
+                <div class="p-4 flex flex-col justify-between flex-1">
                   <div>
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 border border-red-200 dark:border-red-900">
                         {{ zone.status }}
                       </span>
-                      <span class="text-[11px] font-medium text-slate-500">{{ zone.disasterType }}</span>
+                      <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">{{ zone.region }}</span>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 mt-1.5">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
                       {{ zone.title }}
                     </h3>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                       {{ zone.description }}
                     </p>
                   </div>
-                  <div class="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                    <span class="text-[11px] text-slate-600 dark:text-slate-400 font-medium">{{ zone.region }}</span>
+                  <div class="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Learning &amp; Field Reference</span>
                     <button
                       type="button"
                       (click)="selectDisasterZone(zone)"
-                      class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                      class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 flex items-center gap-1"
                     >
-                      Request Here &rarr;
+                      <span>Request Relief</span>
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -691,11 +734,20 @@
 
       </div>
 
-      <!-- Bottom Copyright Bar -->
-      <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <!-- Bottom Copyright & Language Bar -->
+      <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
         <p>
           &copy; 2026 AidLinkX. Developed by <span class="font-semibold text-slate-800 dark:text-slate-200">Naiyar Hasnain</span>. All rights reserved.
         </p>
+
+        <!-- Language Indicator & Selector at Bottom of Page -->
+        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 font-medium shadow-xs">
+          <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Language: <strong>English (EN)</strong></span>
+        </div>
+
         <p class="text-[11px]">
           Designed for humanitarian emergency resilience and disaster life-safety.
         </p>

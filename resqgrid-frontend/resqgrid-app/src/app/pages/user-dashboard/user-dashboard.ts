@@ -124,7 +124,7 @@ export class UserDashboard implements OnInit {
       title: 'Bihar River Basin Inundation',
       region: 'Kosi & Ganga River Basins, Bihar',
       disasterType: 'Flood / Inundation',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/NDRF_in_Bihar_Flood.jpg/800px-NDRF_in_Bihar_Flood.jpg',
+      imageUrl: '/images/disasters/bihar-flood-rescue.jpg',
       status: 'High Alert',
       description: 'Severe seasonal waterlogging and embankment overflow. NDRF water rescue units active.'
     },
@@ -133,7 +133,7 @@ export class UserDashboard implements OnInit {
       title: 'Wayanad Mountain Landslide',
       region: 'Western Ghats, Wayanad, Kerala',
       disasterType: 'Landslide / Mudflow',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Wayanad_landslide.jpg/800px-Wayanad_landslide.jpg',
+      imageUrl: '/images/disasters/kerala-landslide-rescue.jpg',
       status: 'Critical Relief Zone',
       description: 'Heavy torrential precipitation causing slope collapse and debris flow across access corridors.'
     },
@@ -142,18 +142,27 @@ export class UserDashboard implements OnInit {
       title: 'Bay of Bengal Cyclonic System',
       region: 'Odisha & Coastal Andhra Pradesh',
       disasterType: 'Cyclone / Severe Storm',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Cyclone_Fani_approaching_India.jpg/800px-Cyclone_Fani_approaching_India.jpg',
+      imageUrl: '/images/disasters/cyclone-coastal-relief.jpg',
       status: 'Storm Warning',
       description: 'High-velocity gusts and storm surge warnings. Evacuation shelter grid active across low-lying districts.'
     },
     {
-      id: 'kerala-monsoon',
-      title: 'Monsoon Urban Flash Flooding',
-      region: 'Ernakulam & Thrissur, Kerala',
+      id: 'urban-inundation',
+      title: 'Urban Flash Flooding & Inundation',
+      region: 'Metropolitan & Low-lying Sectors',
       disasterType: 'Cloudburst / Flash Flood',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Flooded-home-companypady-2018-kerala-floods.jpg/800px-Flooded-home-companypady-2018-kerala-floods.jpg',
+      imageUrl: '/images/disasters/urban-inundation-rescue.jpg',
       status: 'Active Evacuation',
       description: 'Intense precipitation causing river backflow into residential colonies and transportation cut-offs.'
+    },
+    {
+      id: 'medical-distribution',
+      title: 'Medical & Essential Ration Supply',
+      region: 'District Relief Camps & Shelters',
+      disasterType: 'Other',
+      imageUrl: '/images/disasters/medical-aid-distribution.jpg',
+      status: 'Supply Dispatch',
+      description: 'Field clinics and humanitarian rations distribution for displaced families.'
     }
   ];
 
@@ -464,6 +473,7 @@ export class UserDashboard implements OnInit {
       }
     });
   }
+
 
   private generateClientRequestId(): string {
     const rand = Math.random().toString(36).substring(2, 10);
