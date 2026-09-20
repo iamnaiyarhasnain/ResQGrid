@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 
 // Data we send when creating a help request
 export interface HelpRequestCreateRequest {
@@ -38,31 +38,58 @@ export class HelpRequestService {
 
   constructor(private http: HttpClient) {
 
-    // When internet comes back, automatically sync
-    // requests that were saved while offline.
+    // When internet comes back, automatically
+    // synchronize requests saved while offline.
     window.addEventListener('online', () => {
+
+      console.log('Internet connection restored.');
+
       this.flushQueuedRequests();
     });
 
+
     // If the application starts while online,
-    // try to sync any previously queued requests.
+    // try to synchronize any previous requests.
     if (navigator.onLine) {
+
       this.flushQueuedRequests();
     }
   }
 
-  // Send a new help request to the AWS backend
+
+  // ==========================================
+  // CREATE HELP REQUEST
+  // ==========================================
+
   createHelpRequest(
     request: HelpRequestCreateRequest
   ): Observable<HelpRequestResponse> {
 
-    return this.http.post<HelpRequestResponse>(
-      this.apiUrl,
-      request
-    );
+    /*
+     * timeout(5000)
+     *
+     * The request will wait for a maximum of
+     * 5 seconds.
+     *
+     * This is important for ResQGrid because
+     * an unstable network should not leave the
+     * resident stuck on "Saving Request..."
+     */
+    return this.http
+      .post<HelpRequestResponse>(
+        this.apiUrl,
+        request
+      )
+      .pipe(
+        timeout(5000)
+      );
   }
 
-  // Get all resident help requests
+
+  // ==========================================
+  // GET ALL HELP REQUESTS
+  // ==========================================
+
   getAllHelpRequests(): Observable<HelpRequestResponse[]> {
 
     return this.http.get<HelpRequestResponse[]>(
@@ -70,7 +97,11 @@ export class HelpRequestService {
     );
   }
 
-  // Update the status of a help request
+
+  // ==========================================
+  // UPDATE REQUEST STATUS
+  // ==========================================
+
   updateStatus(
     id: number,
     status: 'ACCEPTED' | 'DISPATCHED' | 'DELIVERED'
@@ -82,33 +113,44 @@ export class HelpRequestService {
     );
   }
 
-  // Store a request in the browser when the user is offline
+
+  // ==========================================
+  // SAVE REQUEST LOCALLY
+  // ==========================================
+
   queueRequest(
     request: HelpRequestCreateRequest
   ): void {
 
+    // Get existing offline requests
     const queue = this.getQueuedRequests();
 
-    // Add the new request to the offline queue
+    // Add the new request
     queue.push(request);
 
-    // Save the queue in browser LocalStorage
+    // Save everything to browser LocalStorage
     localStorage.setItem(
       this.queueKey,
       JSON.stringify(queue)
     );
 
-    console.log('Request stored offline:', request);
+    console.log(
+      'Request stored offline:',
+      request
+    );
   }
 
-  // Get all requests currently waiting for internet
+
+  // ==========================================
+  // GET OFFLINE REQUESTS
+  // ==========================================
+
   getQueuedRequests(): HelpRequestCreateRequest[] {
 
-    const stored = localStorage.getItem(
-      this.queueKey
-    );
+    const stored =
+      localStorage.getItem(this.queueKey);
 
-    // No queued requests
+    // No saved requests
     if (!stored) {
       return [];
     }
@@ -119,30 +161,49 @@ export class HelpRequestService {
 
     } catch {
 
-      // If LocalStorage contains invalid data,
-      // return an empty queue instead of crashing.
+      // Invalid LocalStorage data
       return [];
     }
   }
 
-  // Get number of requests waiting for synchronization
+
+  // ==========================================
+  // GET OFFLINE QUEUE COUNT
+  // ==========================================
+
   getQueuedRequestCount(): number {
 
     return this.getQueuedRequests().length;
   }
 
-  // Send all offline requests when internet returns
+
+  // ==========================================
+  // SYNCHRONIZE OFFLINE REQUESTS
+  // ==========================================
+
   flushQueuedRequests(): void {
 
-    // Do nothing if internet is still unavailable
+    // Don't try to synchronize while offline
     if (!navigator.onLine) {
+
+      console.log(
+        'Still offline. Sync postponed.'
+      );
+
       return;
     }
 
-    const queue = this.getQueuedRequests();
+    // Get saved requests
+    const queue =
+      this.getQueuedRequests();
 
     // Nothing to synchronize
     if (queue.length === 0) {
+
+      console.log(
+        'No offline requests waiting.'
+      );
+
       return;
     }
 
@@ -150,34 +211,65 @@ export class HelpRequestService {
       `Syncing ${queue.length} offline request(s)...`
     );
 
-    this.sendQueuedRequests(queue, 0);
+    // Send requests one by one
+    this.sendQueuedRequests(
+      queue,
+      0
+    );
   }
 
-  // Send queued requests one by one
+
+  // ==========================================
+  // SEND QUEUED REQUESTS ONE BY ONE
+  // ==========================================
+
   private sendQueuedRequests(
     queue: HelpRequestCreateRequest[],
     index: number
   ): void {
 
-    // All requests successfully synchronized
+    // All requests synchronized
     if (index >= queue.length) {
 
+      // Remove offline queue
       localStorage.removeItem(
         this.queueKey
       );
 
       console.log(
-        'Offline requests synced successfully.'
+        'All offline requests synced successfully.'
       );
 
       return;
     }
 
-    // Send the current queued request
+
+    // Make sure internet is still available
+    if (!navigator.onLine) {
+
+      console.log(
+        'Connection lost during synchronization.'
+      );
+
+      // Keep remaining requests
+      const remaining =
+        queue.slice(index);
+
+      localStorage.setItem(
+        this.queueKey,
+        JSON.stringify(remaining)
+      );
+
+      return;
+    }
+
+
+    // Send current request
     this.createHelpRequest(
       queue[index]
     ).subscribe({
 
+      // Request successfully saved on AWS
       next: (response) => {
 
         console.log(
@@ -185,22 +277,24 @@ export class HelpRequestService {
           response
         );
 
-        // Move to the next request
+        // Continue with next request
         this.sendQueuedRequests(
           queue,
           index + 1
         );
       },
 
+
+      // Synchronization failed
       error: (error) => {
 
         console.error(
-          'Offline sync stopped:',
+          'Offline sync failed:',
           error
         );
 
-        // Keep the remaining requests
-        // so they can be retried later.
+        // Keep the current request and
+        // all remaining requests.
         const remaining =
           queue.slice(index);
 
@@ -208,7 +302,12 @@ export class HelpRequestService {
           this.queueKey,
           JSON.stringify(remaining)
         );
+
+        console.log(
+          'Requests kept in LocalStorage for retry.'
+        );
       }
+
     });
   }
 }
