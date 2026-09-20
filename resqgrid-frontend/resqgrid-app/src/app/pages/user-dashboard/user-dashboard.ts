@@ -16,7 +16,6 @@ import {
   HelpRequestResponse
 } from '../../services/help-request.service';
 
-
 @Component({
   selector: 'app-user-dashboard',
 
@@ -25,7 +24,6 @@ import {
   ],
 
   templateUrl: './user-dashboard.html',
-
   styleUrl: './user-dashboard.css'
 })
 export class UserDashboard {
@@ -48,7 +46,7 @@ export class UserDashboard {
   // Current network status
   isOnline = navigator.onLine;
 
-  // Number of requests waiting for sync
+  // Number of requests waiting for synchronization
   queuedRequestCount = 0;
 
 
@@ -99,96 +97,122 @@ export class UserDashboard {
 
       });
 
-
-    // Check offline queue
+    // Check if there are already
+    // requests waiting for synchronization.
     this.updateQueueCount();
   }
 
 
-  // Browser detected internet connection
+  // ==========================================
+  // INTERNET CONNECTION RESTORED
+  // ==========================================
+
   @HostListener('window:online')
   onOnline(): void {
 
+    // Update network status
     this.isOnline = true;
 
-    // Try syncing queued requests
-    this.helpRequestService
-      .flushQueuedRequests();
-
-    this.updateQueueCount();
-
+    // Tell the user that connection is back
     this.successMessage =
-      '🟢 Connection restored. Syncing offline requests...';
+      ' Connection restored. Syncing offline requests...';
+
+    // Try to send all requests that
+    // were saved while offline.
+    this.helpRequestService.flushQueuedRequests();
+
+    // Update the number of queued requests
+    this.updateQueueCount();
   }
 
 
-  // Browser detected network loss
+  // ==========================================
+  // INTERNET CONNECTION LOST
+  // ==========================================
+
   @HostListener('window:offline')
   onOffline(): void {
 
+    // Update network status
     this.isOnline = false;
 
+    // Inform the resident
     this.successMessage =
-      '🟠 You are offline. New requests will be stored safely on this device.';
+      ' You are offline. New requests will be stored safely on this device.';
   }
 
 
-  // Update queue count
+  // ==========================================
+  // UPDATE OFFLINE QUEUE COUNT
+  // ==========================================
+
   updateQueueCount(): void {
 
     this.queuedRequestCount =
-      this.helpRequestService
-        .getQueuedRequestCount();
+      this.helpRequestService.getQueuedRequestCount();
   }
 
 
-  // Submit request
+  // ==========================================
+  // SUBMIT HELP REQUEST
+  // ==========================================
+
   onSubmit(): void {
 
-    // Clear old messages
+    // Clear previous messages
     this.successMessage = '';
     this.errorMessage = '';
+
+    // Clear previous request ID
     this.requestId = null;
 
 
-    // Validate form
+    // ==========================================
+    // VALIDATE FORM
+    // ==========================================
+
     if (this.helpRequestForm.invalid) {
 
+      // Show validation errors
       this.helpRequestForm.markAllAsTouched();
 
       return;
     }
 
 
+    // Prevent duplicate clicks
     this.isSubmitting = true;
 
 
-    // Form data
-    const request:
-      HelpRequestCreateRequest =
-        this.helpRequestForm.value;
+    // Get form data
+    const request: HelpRequestCreateRequest =
+      this.helpRequestForm.value;
 
 
     // ==========================================
-    // OFFLINE MODE
+    // CHECK CURRENT NETWORK STATUS
     // ==========================================
 
-    if (!this.isOnline) {
+    // IMPORTANT:
+    // Use navigator.onLine directly here.
+    // This checks the browser's CURRENT status
+    // instead of relying only on our variable.
+    if (!navigator.onLine) {
 
-      // Store request in browser
-      this.helpRequestService
-        .queueRequest(request);
+      // Save request locally
+      this.helpRequestService.queueRequest(request);
 
-
+      // Tell user that request was saved
       this.successMessage =
-        '🟠 You are offline. Your request has been saved on this device and will be sent automatically when the connection returns.';
-
+        'You are offline. Your request has been saved on this device and will be sent automatically when the connection returns.';
 
       // Reset form
       this.helpRequestForm.reset();
 
+      // Stop loading
       this.isSubmitting = false;
 
+      // Update queue count
       this.updateQueueCount();
 
       return;
@@ -203,31 +227,36 @@ export class UserDashboard {
       .createHelpRequest(request)
       .subscribe({
 
-        // Successfully sent
-        next: (
-          response: HelpRequestResponse
-        ) => {
+        // ======================================
+        // REQUEST SUCCESS
+        // ======================================
 
+        next: (response: HelpRequestResponse) => {
+
+          // Show success message
           this.successMessage =
-            '✅ Your help request has been submitted successfully.';
+            ' Your help request has been submitted successfully.';
 
-          this.requestId =
-            response.id;
-
+          // Store generated request ID
+          this.requestId = response.id;
 
           console.log(
             'Help request created:',
             response
           );
 
-
+          // Reset form
           this.helpRequestForm.reset();
 
+          // Stop loading
           this.isSubmitting = false;
         },
 
 
-        // Network/server failure
+        // ======================================
+        // REQUEST FAILED
+        // ======================================
+
         error: (error) => {
 
           console.error(
@@ -236,29 +265,34 @@ export class UserDashboard {
           );
 
 
-          // If the browser lost connection,
-          // store the request locally.
+          // Check CURRENT browser connection.
+          // The connection might have disappeared
+          // after the request started.
           if (!navigator.onLine) {
 
-            this.helpRequestService
-              .queueRequest(request);
+            // Save request locally
+            this.helpRequestService.queueRequest(request);
 
-
+            // Tell the user
             this.successMessage =
-              '🟠 Connection lost. Your request has been saved offline and will be sent automatically when the connection returns.';
+              ' Connection lost. Your request has been saved offline and will be sent automatically when the connection returns.';
 
-
+            // Reset form
             this.helpRequestForm.reset();
 
+            // Update queue count
             this.updateQueueCount();
 
           } else {
 
+            // Internet is available but
+            // the backend returned an error.
             this.errorMessage =
-              '❌ Unable to submit your request. Please try again.';
+              ' Unable to submit your request. Please try again.';
           }
 
 
+          // Stop loading
           this.isSubmitting = false;
         }
 
