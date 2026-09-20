@@ -1,35 +1,82 @@
-<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
-  <!-- Top Navigation Bar -->
-  <header class="border-b border-[#e2ddd4] bg-[#fffdf8]/95 sticky top-0 z-40 backdrop-blur">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-      <!-- Logo & App Name -->
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
+
+  <!-- ==================== TOP NAVIGATION HEADER ==================== -->
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-40 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      
+      <!-- Brand Logo -->
       <a routerLink="/user" class="flex items-center gap-3 shrink-0" aria-label="AidLinkX Home">
         <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 sm:h-10 w-auto" />
       </a>
 
-      <!-- Header Quick Actions & Status -->
-      <div class="flex items-center gap-2 sm:gap-4">
-        <!-- Live Online / Offline Chip -->
-        <span [class]="isOnline ? 'inline-flex items-center gap-1.5 rounded-full bg-[#ecfdf5] border border-[#a7f3d0] px-2.5 py-1 text-xs font-bold text-[#065f46]' : 'inline-flex items-center gap-1.5 rounded-full bg-[#fef3c7] border border-[#fde68a] px-2.5 py-1 text-xs font-bold text-[#92400e]'">
-          <span [class]="isOnline ? 'h-2 w-2 rounded-full bg-[#10b981] animate-pulse' : 'h-2 w-2 rounded-full bg-[#f59e0b]'"></span>
-          <span class="hidden xs:inline">{{ isOnline ? 'Network Online' : 'Offline Ready' }}</span>
+      <!-- Right Side Actions (Coordinator Login, Camp Portal, Feedback, Language, Theme) -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Live Connection Status -->
+        <span [class]="isOnline 
+          ? 'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 px-2.5 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300' 
+          : 'inline-flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 px-2.5 py-1 text-xs font-medium text-amber-800 dark:text-amber-300'">
+          <span [class]="isOnline ? 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse' : 'h-2 w-2 rounded-full bg-amber-500'"></span>
+          <span class="hidden sm:inline">{{ isOnline ? 'Grid Online' : 'Offline Mode' }}</span>
         </span>
 
+        <!-- Language Selector Badge -->
+        <div class="hidden lg:flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg">
+          <svg class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>English (EN)</span>
+        </div>
+
+        <!-- Dark / Light Theme Toggle Button -->
+        <button
+          type="button"
+          (click)="toggleTheme()"
+          [attr.aria-label]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+          class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm"
+        >
+          @if (themeService.isDark()) {
+            <!-- Sun Icon for Light Mode -->
+            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          } @else {
+            <!-- Moon Icon for Dark Mode -->
+            <svg class="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          }
+        </button>
+
         <!-- Feedback Link -->
-        <a routerLink="/feedback" class="hidden md:inline-flex items-center gap-1 text-xs font-bold text-[#5c564c] hover:text-[#1c1b18] px-2.5 py-1 rounded-lg hover:bg-[#ede9df] transition">
-          <span>💬</span> Feedback
+        <a routerLink="/feedback" class="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span>Feedback</span>
         </a>
 
-        <!-- Resident Authentication (Optional) -->
+        <!-- Relief Camp Portal -->
+        <a
+          routerLink="/camp-worker"
+          class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition shadow-sm"
+        >
+          <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <span>Camp Portal</span>
+        </a>
+
+        <!-- Resident Sign In (Optional) -->
         @if (currentUser) {
           <div class="flex items-center gap-2">
-            <span class="hidden sm:inline-block text-xs font-bold text-[#423e37] bg-[#ede8dc] px-2.5 py-1.5 rounded-lg border border-[#ded8cb]">
-              👤 {{ currentUser.name }}
+            <span class="hidden md:inline-flex text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+              {{ currentUser.name }}
             </span>
             <button
               type="button"
               (click)="logout()"
-              class="rounded-lg border border-[#d6cfc3] bg-white px-3 py-1.5 text-xs font-bold text-[#44413b] transition hover:bg-[#ede8dc]"
+              class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               Sign Out
             </button>
@@ -38,688 +85,741 @@
           <button
             type="button"
             (click)="openAuthPanel('login')"
-            class="rounded-lg border border-[#d6cfc3] bg-white px-3 py-1.5 text-xs font-bold text-[#44413b] transition hover:bg-[#ede8dc] shadow-sm"
+            class="hidden md:inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-100 dark:hover:bg-slate-700 shadow-sm"
           >
-            Resident Sign In <span class="hidden sm:inline font-normal text-[#756f64]">(Optional)</span>
+            Resident Sign In <span class="text-slate-400 font-normal">(Optional)</span>
           </button>
         }
 
-        <!-- Coordinator Portal Link -->
+        <!-- Coordinator Login Button (Prominently Top Right) -->
         <a
           routerLink="/coordinator-login"
-          class="rounded-lg bg-[#24221e] px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-[#3d3a33] shadow-sm inline-flex items-center gap-1.5"
+          class="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold transition shadow-sm hover:shadow active:scale-[0.98]"
         >
-          <span>🛡️</span>
-          <span class="hidden sm:inline">Relief Desk</span>
-          <span class="sm:hidden">Desk</span>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>Coordinator Login</span>
         </a>
+
       </div>
     </div>
   </header>
 
-  <!-- Offline / Sync Warning Banner -->
-  @if (queuedRequestCount > 0) {
-    <div class="bg-[#fef3c7] border-b border-[#fde68a] px-4 py-2.5 text-xs sm:text-sm text-[#78350f]">
-      <div class="mx-auto flex max-w-7xl items-center justify-between gap-3">
+  <!-- ==================== OFFLINE / SYNC BANNER ==================== -->
+  @if (!isOnline || queuedRequestCount > 0) {
+    <div class="border-b border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 px-4 py-2.5 text-amber-900 dark:text-amber-200">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2">
-          <span class="text-base">📦</span>
-          <span><strong>{{ queuedRequestCount }} request(s)</strong> safely stored locally on this device.</span>
+          <svg class="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>
+            @if (!isOnline) {
+              <strong>Offline Mode:</strong> Requests submitted now will be stored safely and dispatched automatically when connectivity returns.
+            } @else {
+              <strong>Pending Synchronization:</strong> You have {{ queuedRequestCount }} queued emergency request(s) awaiting transmission.
+            }
+          </span>
         </div>
-        <button
-          type="button"
-          (click)="retryQueuedRequests()"
-          class="shrink-0 rounded-lg bg-[#92400e] text-white px-3 py-1 text-xs font-bold transition hover:bg-[#78350f]"
-        >
-          ⚡ Sync Now
-        </button>
+        @if (isOnline && queuedRequestCount > 0) {
+          <button
+            type="button"
+            (click)="triggerManualSync()"
+            class="rounded-lg bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 font-semibold text-xs transition"
+          >
+            Sync Now
+          </button>
+        }
       </div>
     </div>
   }
 
-  <!-- Optional Resident Authentication Modal -->
-  @if (showAuthPanel) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#1c1b18]/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-      <div class="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-[2rem] border border-[#e4ded4] bg-[#fffdf9] p-6 shadow-2xl sm:p-8">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-[0.14em] text-[#787164]">Non-Compulsory Account</span>
-            <h2 id="authModalTitle" class="mt-1 font-serif text-2xl font-bold tracking-tight text-[#1c1b18]">
-              {{ authMode === 'register' ? 'Create Resident Account' : 'Welcome Back' }}
-            </h2>
-          </div>
-          <button
-            type="button"
-            (click)="showAuthPanel = false"
-            class="rounded-full bg-[#ede7dc] p-1.5 text-sm font-bold text-[#5c564b] hover:bg-[#dfd8cb]"
-            aria-label="Close modal"
-          >
-            ✕
-          </button>
-        </div>
+  <!-- ==================== MAIN HERO & DASHBOARD ==================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div class="mt-3 rounded-xl bg-[#f5f2eb] p-3 text-xs leading-5 text-[#635d52] border border-[#ded8cb]">
-          💡 <strong>Notice:</strong> An account is <em>never required</em> to request emergency help. Anyone can submit requests immediately as a guest. Signing in simply lets you view and track your requests.
-        </div>
-
-        <!-- Mode Toggle -->
-        <div class="mt-5 grid grid-cols-2 rounded-xl bg-[#ede7dc] p-1 text-xs font-bold">
-          <button
-            type="button"
-            (click)="setAuthMode('register')"
-            [class]="authMode === 'register' ? 'rounded-lg bg-white px-3 py-2 text-[#24221e] shadow-sm' : 'rounded-lg px-3 py-2 text-[#756f63]'"
-          >
-            Register Account
-          </button>
-          <button
-            type="button"
-            (click)="setAuthMode('login')"
-            [class]="authMode === 'login' ? 'rounded-lg bg-white px-3 py-2 text-[#24221e] shadow-sm' : 'rounded-lg px-3 py-2 text-[#756f63]'"
-          >
-            Sign In
-          </button>
-        </div>
-
-        <!-- Auth Form -->
-        <form [formGroup]="authForm" (ngSubmit)="onAuthSubmit()" class="mt-5 space-y-4" novalidate>
-          @if (authMode === 'register') {
-            <div>
-              <label for="regName" class="block text-xs font-bold text-[#3c3933] mb-1">Your Full Name *</label>
-              <input
-                id="regName"
-                type="text"
-                formControlName="name"
-                placeholder="e.g. Priya Nair"
-                class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-              />
-            </div>
-            <div>
-              <label for="regPhone" class="block text-xs font-bold text-[#3c3933] mb-1">Mobile Phone Number (or Email) *</label>
-              <input
-                id="regPhone"
-                type="tel"
-                formControlName="phone"
-                placeholder="e.g. +91 98765 43210"
-                class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-              />
-            </div>
-            <div>
-              <label for="regEmail" class="block text-xs font-bold text-[#3c3933] mb-1">Email Address <span class="font-normal text-[#807a6f]">(Optional)</span></label>
-              <input
-                id="regEmail"
-                type="email"
-                formControlName="email"
-                placeholder="you@example.com"
-                class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-              />
-            </div>
-          } @else {
-            <div>
-              <label for="loginId" class="block text-xs font-bold text-[#3c3933] mb-1">Phone Number or Email *</label>
-              <input
-                id="loginId"
-                type="text"
-                formControlName="identifier"
-                placeholder="Enter registered phone or email"
-                class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-              />
-            </div>
-          }
-
-          <div>
-            <label for="authPass" class="block text-xs font-bold text-[#3c3933] mb-1">Password *</label>
-            <input
-              id="authPass"
-              type="password"
-              formControlName="password"
-              placeholder="Minimum 6 characters"
-              class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-            />
-          </div>
-
-          @if (authErrorMessage) {
-            <p class="text-xs font-bold text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
-              {{ authErrorMessage }}
+    <!-- Top Notifications -->
+    @if (successMessage) {
+      <div class="mb-6 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 p-4 text-emerald-900 dark:text-emerald-200 text-sm flex items-start gap-3 shadow-sm">
+        <svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p class="font-semibold">{{ successMessage }}</p>
+          @if (requestId) {
+            <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
+              Dispatch Reference ID: <span class="font-mono font-bold">#{{ requestId }}</span>. Keep this reference for on-ground field responders.
             </p>
           }
-
-          <button
-            type="submit"
-            [disabled]="isAuthSubmitting"
-            class="w-full rounded-xl bg-[#24221e] py-3 text-xs sm:text-sm font-bold text-white transition hover:bg-[#3d3a33] disabled:opacity-60"
-          >
-            {{ isAuthSubmitting ? 'Verifying...' : (authMode === 'register' ? 'Register Account' : 'Sign In') }}
-          </button>
-
-          <button
-            type="button"
-            (click)="showAuthPanel = false"
-            class="w-full text-center text-xs font-bold text-[#756f63] hover:text-[#24221e] pt-1"
-          >
-            ← Continue as Guest (Skip Account)
-          </button>
-        </form>
-      </div>
-    </div>
-  }
-
-  <!-- Main Hero & Emergency Help Form (AT THE TOP) -->
-  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-
-    <!-- Top Headline Banner -->
-    <div class="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-[#e2ddd4] pb-6">
-      <div>
-        <div class="flex items-center gap-2 mb-2">
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#fbeae7] border border-[#f5c7be] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[#b91c1c]">
-            <span class="h-2 w-2 rounded-full bg-[#dc2626] animate-emergency"></span>
-            AidLinkX Emergency Help Desk
-          </span>
-          <span class="text-xs text-[#716b60] hidden sm:inline">| Offline-Ready Disaster Grid</span>
-        </div>
-        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1c1b18]">
-          Request Immediate Disaster Relief
-        </h1>
-        <p class="mt-2 text-sm sm:text-base text-[#615c52] max-w-2xl">
-          Submit your emergency location and critical requirements below. Requests are cached on this device if networks fail and synchronized directly with regional rescue coordinators.
-        </p>
-      </div>
-
-      <!-- Quick Guest Notice Badge -->
-      <div class="shrink-0 flex flex-wrap gap-2">
-        <span class="inline-flex items-center gap-1.5 rounded-xl border border-[#ded8cb] bg-white px-3 py-2 text-xs font-semibold text-[#4f4b43] shadow-sm">
-          <span>🛡️</span> Zero Login Required
-        </span>
-        <span class="inline-flex items-center gap-1.5 rounded-xl border border-[#ded8cb] bg-white px-3 py-2 text-xs font-semibold text-[#4f4b43] shadow-sm">
-          <span>📡</span> Works 100% Offline
-        </span>
-      </div>
-    </div>
-
-    <!-- Feedback / Confirmation Alerts -->
-    @if (successMessage) {
-      <div class="mb-6 rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] p-5 shadow-sm text-[#166534]">
-        <div class="flex items-start gap-3">
-          <span class="text-2xl">✅</span>
-          <div>
-            <h3 class="font-bold text-base">Request Recorded Successfully</h3>
-            <p class="mt-1 text-sm leading-6">{{ successMessage }}</p>
-            @if (requestId) {
-              <p class="mt-2 text-xs font-bold text-[#14532d] bg-[#dcfce7] inline-block px-2.5 py-1 rounded border border-[#bbf7d0]">
-                Official Ticket Number: #{{ requestId }}
-              </p>
-            }
-          </div>
         </div>
       </div>
     }
 
     @if (errorMessage) {
-      <div class="mb-6 rounded-2xl border border-[#fecaca] bg-[#fef2f2] p-5 shadow-sm text-[#991b1b]">
-        <div class="flex items-start gap-3">
-          <span class="text-xl">⚠️</span>
-          <div>
-            <h3 class="font-bold text-sm">Notice</h3>
-            <p class="mt-1 text-sm leading-6">{{ errorMessage }}</p>
-          </div>
-        </div>
+      <div class="mb-6 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 p-4 text-red-900 dark:text-red-200 text-sm flex items-start gap-3 shadow-sm">
+        <svg class="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="font-medium">{{ errorMessage }}</p>
       </div>
     }
 
-    <!-- Two Column Grid: [Emergency Form (Left)] and [Emergency Hotlines & Relief Info (Right)] -->
-    <div class="grid gap-8 lg:grid-cols-[1.5fr_1fr] items-start">
-
-      <!-- ============================================== -->
-      <!-- 1. EMERGENCY HELP REQUEST FORM (AT TOP)        -->
-      <!-- ============================================== -->
-      <section class="rounded-[2rem] border border-[#e4ded4] bg-[#fffdf9] p-6 shadow-[0_12px_45px_rgba(40,36,29,0.06)] sm:p-8">
-        <div class="mb-6 border-b border-[#eee9de] pb-4 flex items-center justify-between">
-          <div>
-            <h2 class="font-serif text-2xl font-bold tracking-tight text-[#1c1b18]">Emergency SOS Form</h2>
-            <p class="text-xs text-[#736d62] mt-0.5">Please provide accurate contact &amp; location details.</p>
-          </div>
-          <span class="rounded-full bg-red-100 text-red-800 border border-red-200 text-[11px] font-extrabold px-3 py-1 uppercase tracking-wider">
-            High Priority
-          </span>
+    <!-- ==================== EMERGENCY HOTLINE QUICK CALL GRID ==================== -->
+    <section class="mb-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            Emergency Response Directory
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Instant 1-click dial and copy for national emergency services and AidLinkX crisis desk.
+          </p>
         </div>
+        @if (copiedNumber) {
+          <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            Copied {{ copiedNumber }} to clipboard
+          </span>
+        }
+      </div>
 
-        <form [formGroup]="helpRequestForm" (ngSubmit)="onSubmit()" novalidate class="space-y-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        @for (contact of emergencyContacts; track contact.number) {
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3.5 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border {{ contact.badgeColor }}">
+                  {{ contact.number }}
+                </span>
+                <button
+                  type="button"
+                  (click)="copyEmergencyNumber(contact.number)"
+                  title="Copy telephone number"
+                  class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded transition"
+                >
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                {{ contact.name }}
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                {{ contact.category }}
+              </p>
+            </div>
 
-          <!-- Section 1: User Contact Information -->
-          <div class="bg-[#f9f8f4] p-4 sm:p-5 rounded-2xl border border-[#ded8cb] space-y-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-[#6b655a] flex items-center gap-1.5">
-              <span>👤</span> 1. Affected Resident &amp; Contact Details
-            </h3>
+            <a
+              href="tel:{{ contact.number }}"
+              class="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+            >
+              <svg class="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span>Call {{ contact.number }}</span>
+            </a>
+          </div>
+        }
+      </div>
+    </section>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <!-- Name -->
+    <!-- ==================== TWO COLUMN MAIN SECTION ==================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT COLUMN: EMERGENCY AID REQUEST FORM -->
+      <div class="lg:col-span-7" id="aid-request-form">
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm">
+          
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-5 mb-6">
+            <div class="flex items-center justify-between gap-4">
               <div>
-                <label for="reqName" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Your Full Name <span class="text-red-500">*</span>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                  <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                  Immediate Citizen Rescue Dispatch
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-2 tracking-tight">
+                  Request Emergency Assistance
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Fill in your situation details below. Dispatches are routed immediately to local NDRF, SDRF, and camp coordinators.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FORM START -->
+          <form [formGroup]="helpRequestForm" (ngSubmit)="submitHelpRequest()" class="space-y-6">
+
+            <!-- Location Section -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <label for="location" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Current Location / GPS Coordinates <span class="text-red-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  (click)="detectGPS()"
+                  [disabled]="isDetectingLocation"
+                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition"
+                >
+                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{{ isDetectingLocation ? 'Locating...' : 'Auto-Detect GPS' }}</span>
+                </button>
+              </div>
+
+              <input
+                id="location"
+                type="text"
+                formControlName="location"
+                placeholder="E.g. Ward 4, Saharsa Village, Near Kosi Embankment or Wayanad Meppadi Road"
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+              />
+              @if (helpRequestForm.get('location')?.invalid && helpRequestForm.get('location')?.touched) {
+                <p class="text-xs text-red-600 font-medium">Please specify your village, landmark, or current location coordinates.</p>
+              }
+
+              <!-- Landmark -->
+              <div>
+                <label for="landmark" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Nearest Landmark or Access Description
                 </label>
                 <input
-                  id="reqName"
+                  id="landmark"
+                  type="text"
+                  formControlName="landmark"
+                  placeholder="E.g. Primary School Roof, Water Tank, Panchayat Bhawan, 2nd floor balcony"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                />
+              </div>
+            </div>
+
+            <!-- Contact Information Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Contact Person Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="name"
                   type="text"
                   formControlName="name"
-                  placeholder="e.g. Suman Sen"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  placeholder="Your full name"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 />
                 @if (helpRequestForm.get('name')?.invalid && helpRequestForm.get('name')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Name is required (at least 2 characters).</p>
+                  <p class="text-xs text-red-600 font-medium mt-1">Name is required.</p>
                 }
               </div>
 
-              <!-- Primary Phone Number -->
               <div>
-                <label for="reqPhone" class="block text-xs font-bold text-[#3c3933] mb-1">
+                <label for="contactPhone" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
                   Primary Mobile Number <span class="text-red-500">*</span>
                 </label>
                 <input
-                  id="reqPhone"
+                  id="contactPhone"
                   type="tel"
                   formControlName="contactPhone"
-                  placeholder="e.g. +91 98765 43210"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  placeholder="E.g. +91 98765 43210"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 />
                 @if (helpRequestForm.get('contactPhone')?.invalid && helpRequestForm.get('contactPhone')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Valid contact number is required for dispatch.</p>
+                  <p class="text-xs text-red-600 font-medium mt-1">Valid phone number required for rescuer callbacks.</p>
                 }
               </div>
+            </div>
 
-              <!-- Alternate Phone Number -->
+            <!-- Alternate Contact & Number of People -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label for="reqAltPhone" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Alternate / Relative Phone <span class="font-normal text-[#807a6f]">(Optional)</span>
+                <label for="alternateContact" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Alternate Contact / Relative Number
                 </label>
                 <input
-                  id="reqAltPhone"
+                  id="alternateContact"
                   type="tel"
                   formControlName="alternateContact"
-                  placeholder="e.g. +91 91234 56789"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  placeholder="Optional alternate mobile"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 />
               </div>
 
-              <!-- People Count -->
               <div>
-                <label for="reqPeople" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Total People Trapped / Needing Aid <span class="text-red-500">*</span>
+                <label for="peopleCount" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  People Needing Evacuation / Aid <span class="text-red-500">*</span>
                 </label>
                 <input
-                  id="reqPeople"
+                  id="peopleCount"
                   type="number"
                   min="1"
                   max="5000"
                   formControlName="peopleCount"
-                  placeholder="e.g. 4"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-                />
-                @if (helpRequestForm.get('peopleCount')?.invalid && helpRequestForm.get('peopleCount')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Must be at least 1 person.</p>
-                }
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 2: Location & Landmark -->
-          <div class="bg-[#f9f8f4] p-4 sm:p-5 rounded-2xl border border-[#ded8cb] space-y-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-[#6b655a] flex items-center gap-1.5">
-              <span>📍</span> 2. Location &amp; Landmark Access
-            </h3>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label for="reqLocation" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Locality / Village / Ward / Area <span class="text-red-500">*</span>
-                </label>
-                <input
-                  id="reqLocation"
-                  type="text"
-                  formControlName="location"
-                  placeholder="e.g. Aluva East, Ward 7"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-                />
-                @if (helpRequestForm.get('location')?.invalid && helpRequestForm.get('location')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Location is required for dispatch teams.</p>
-                }
-              </div>
-
-              <div>
-                <label for="reqLandmark" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Specific Landmark / Building / Floor <span class="font-normal text-[#807a6f]">(Crucial for boat/air rescue)</span>
-                </label>
-                <input
-                  id="reqLandmark"
-                  type="text"
-                  formControlName="landmark"
-                  placeholder="e.g. Near St. Mary Church, 2nd floor terrace"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 />
               </div>
             </div>
-          </div>
 
-          <!-- Section 3: Disaster Type & Requirements -->
-          <div class="bg-[#f9f8f4] p-4 sm:p-5 rounded-2xl border border-[#ded8cb] space-y-4">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-[#6b655a] flex items-center gap-1.5">
-              <span>🌪️</span> 3. Disaster Situation &amp; Relief Required
-            </h3>
-
-            <div class="grid gap-4 sm:grid-cols-3">
-              <!-- Disaster Type Selection -->
+            <!-- Disaster Type & Urgency Level -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label for="reqDisaster" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Disaster Type <span class="text-red-500">*</span>
+                <label for="disasterType" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Disaster Classification <span class="text-red-500">*</span>
                 </label>
                 <select
-                  id="reqDisaster"
+                  id="disasterType"
                   formControlName="disasterType"
-                  (change)="onDisasterTypeChange()"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 >
-                  @for (disaster of disasterTypes; track disaster) {
-                    <option [value]="disaster">{{ disaster }}</option>
+                  @for (type of disasterTypes; track type) {
+                    <option [value]="type">{{ type }}</option>
                   }
                 </select>
               </div>
 
-              <!-- Primary Aid Needed -->
               <div>
-                <label for="reqHelpType" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Primary Aid Needed <span class="text-red-500">*</span>
+                <label for="priority" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Urgency / Threat Severity <span class="text-red-500">*</span>
                 </label>
                 <select
-                  id="reqHelpType"
-                  formControlName="helpType"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-                >
-                  <option value="">Select aid required</option>
-                  <option value="RESCUE">🚨 Immediate Evacuation / Rescue</option>
-                  <option value="MEDICAL_ASSISTANCE">🚑 Urgent Medical / First Aid</option>
-                  <option value="WATER">💧 Drinking Water</option>
-                  <option value="FOOD">🍲 Ready Food / Rations</option>
-                  <option value="MEDICINE">💊 Essential Prescription Medicines</option>
-                  <option value="BLANKETS">🛌 Blankets &amp; Warm Clothing</option>
-                  <option value="SHELTER">⛺ Emergency Shelter Tent</option>
-                  <option value="SANITATION">🧴 Hygiene &amp; Sanitation</option>
-                  <option value="OTHER">📦 Other Emergency Aid</option>
-                </select>
-                @if (helpRequestForm.get('helpType')?.invalid && helpRequestForm.get('helpType')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Please select the aid type needed.</p>
-                }
-              </div>
-
-              <!-- Urgency -->
-              <div>
-                <label for="reqPriority" class="block text-xs font-bold text-[#3c3933] mb-1">
-                  Urgency Level <span class="text-red-500">*</span>
-                </label>
-                <select
-                  id="reqPriority"
+                  id="priority"
                   formControlName="priority"
-                  class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+                  class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 >
-                  <option value="CRITICAL">🔴 Critical — Life Threat / Immediate</option>
-                  <option value="HIGH">🟠 High — Urgent (within few hours)</option>
-                  <option value="NORMAL">🟡 Normal — Needed today</option>
+                  <option value="CRITICAL">Critical — Immediate Life Threat (Water Rising / Collapse)</option>
+                  <option value="HIGH">High — Urgent (Stranded, Food/Water Exhausted)</option>
+                  <option value="NORMAL">Normal — Monitoring / Relocation Request</option>
                 </select>
               </div>
             </div>
 
-            <!-- Dynamic 'Other' Disaster Open Box -->
+            <!-- If "Other" Disaster Type is Selected -->
             @if (helpRequestForm.get('disasterType')?.value === 'Other') {
-              <div class="rounded-xl bg-[#fff8e6] p-3.5 border border-[#fed7aa] transition-all">
-                <label for="reqDisasterDetails" class="block text-xs font-bold text-[#9a3412] mb-1">
-                  Please Specify the Disaster Situation <span class="text-red-600">*</span>
+              <div class="rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/30 p-4">
+                <label for="disasterTypeOther" class="block text-xs font-bold uppercase tracking-wider text-blue-900 dark:text-blue-300 mb-1.5">
+                  Please Specify Disaster Details <span class="text-red-500">*</span>
                 </label>
-                <input
-                  id="reqDisasterDetails"
-                  type="text"
-                  formControlName="disasterDetails"
-                  placeholder="e.g. River embankment breach, industrial gas leakage, bridge collapsed..."
-                  class="w-full rounded-xl border border-[#fdba74] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none focus:border-[#c2410c] focus:ring-4 focus:ring-[#ffedd5]"
-                />
-                @if (helpRequestForm.get('disasterDetails')?.invalid && helpRequestForm.get('disasterDetails')?.touched) {
-                  <p class="mt-1 text-xs text-red-600 font-medium">Please describe the disaster when Other is chosen.</p>
-                }
+                <textarea
+                  id="disasterTypeOther"
+                  rows="2"
+                  formControlName="disasterTypeOther"
+                  placeholder="Describe the nature of the emergency (e.g. Bridge collapse, Gas leakage, Cloudburst debris cut-off)"
+                  class="w-full rounded-lg border border-blue-300 dark:border-blue-800 bg-white dark:bg-slate-800 p-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+                ></textarea>
               </div>
             }
 
-            <!-- Special Needs Multi-Select Tags -->
+            <!-- Special Needs & Vulnerabilities -->
             <div>
-              <label class="block text-xs font-bold text-[#3c3933] mb-2">
-                Any Vulnerable Groups or Special Needs Among the Trapped? <span class="font-normal text-[#807a6f]">(Optional)</span>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                Special Vulnerabilities Present
               </label>
               <div class="flex flex-wrap gap-2">
-                @for (need of specialNeedsOptions; track need.id) {
+                @for (item of specialNeedsOptions; track item.id) {
                   <button
                     type="button"
-                    (click)="toggleSpecialNeed(need.id)"
-                    [class]="isSpecialNeedSelected(need.id) ? 'inline-flex items-center gap-1.5 rounded-lg border border-[#24221e] bg-[#24221e] px-3 py-1.5 text-xs font-bold text-white transition' : 'inline-flex items-center gap-1.5 rounded-lg border border-[#d8d1c5] bg-white px-3 py-1.5 text-xs font-semibold text-[#524d45] hover:bg-[#ede8dc] transition'"
+                    (click)="toggleSpecialNeed(item.label)"
+                    [class]="isSpecialNeedSelected(item.label)
+                      ? 'inline-flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-3 py-1.5 text-xs font-semibold shadow-sm transition'
+                      : 'inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 text-xs font-medium transition'"
                   >
-                    <span>{{ isSpecialNeedSelected(need.id) ? '✓' : '+' }}</span>
-                    <span>{{ need.label }}</span>
+                    @if (isSpecialNeedSelected(item.label)) {
+                      <svg class="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    }
+                    <span>{{ item.label }}</span>
                   </button>
                 }
               </div>
             </div>
 
-            <!-- Situation Description -->
+            <!-- Optional Situation Photo Upload -->
             <div>
-              <label for="reqDescription" class="block text-xs font-bold text-[#3c3933] mb-1">
-                Describe the Immediate Situation &amp; Water Level / Hazards <span class="text-red-500">*</span>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                Situation Reference Photo <span class="text-slate-400 font-normal">(Optional)</span>
               </label>
-              <textarea
-                id="reqDescription"
-                rows="3"
-                formControlName="description"
-                placeholder="e.g. Water reached 1st floor, power cut off, 2 elderly diabetic patients without insulin, road submerged from north side..."
-                class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition placeholder:text-[#aba498] focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
-              ></textarea>
-              @if (helpRequestForm.get('description')?.invalid && helpRequestForm.get('description')?.touched) {
-                <p class="mt-1 text-xs text-red-600 font-medium">Please enter at least 5 characters describing the situation.</p>
-              }
-            </div>
-
-            <!-- Section 4: Non-Compulsory Photo Section -->
-            <div>
-              <label class="block text-xs font-bold text-[#3c3933] mb-1">
-                Attach Reference Photo <span class="font-normal text-[#807a6f]">(Optional — Max 1.5MB)</span>
-              </label>
-              <p class="text-xs text-[#787164] mb-2">
-                A quick photo of water level, damaged route, or roof landmark helps boats &amp; helicopters spot you faster.
-              </p>
 
               @if (photoData) {
-                <div class="flex items-center gap-3 rounded-xl border border-[#cbd5e1] bg-white p-3">
-                  <img [src]="photoData" alt="Attached reference photo" class="h-14 w-14 rounded-lg object-cover border border-[#e2e8f0]" />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-[#1e293b] truncate">{{ photoName || 'photo_reference.jpg' }}</p>
-                    <p class="text-[11px] text-emerald-700 font-semibold">✓ Photo ready for transmission</p>
+                <div class="relative rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-800 flex items-center justify-between gap-4">
+                  <div class="flex items-center gap-3">
+                    <img [src]="photoData" alt="Uploaded incident photo" class="h-14 w-14 rounded-lg object-cover border border-slate-300 dark:border-slate-600" />
+                    <div>
+                      <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ photoName || 'incident-photo.jpg' }}</p>
+                      <p class="text-[11px] text-slate-500">Photo attached for rescue teams</p>
+                    </div>
                   </div>
                   <button
                     type="button"
                     (click)="removePhoto()"
-                    class="rounded-lg bg-red-50 text-red-700 hover:bg-red-100 px-2.5 py-1 text-xs font-bold border border-red-200"
+                    class="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 px-2.5 py-1 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 transition"
                   >
                     Remove
                   </button>
                 </div>
               } @else {
-                <div class="relative flex items-center justify-center rounded-xl border-2 border-dashed border-[#d8d1c5] bg-white/70 p-4 hover:bg-white transition cursor-pointer">
+                <div class="relative rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-4 text-center hover:border-blue-500 dark:hover:border-blue-500 transition cursor-pointer">
                   <input
                     type="file"
                     accept="image/*"
                     (change)="onPhotoSelected($event)"
                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
-                  <div class="text-center pointer-events-none">
-                    <span class="text-xl">📷</span>
-                    <p class="text-xs font-bold text-[#423e37] mt-1">Tap to capture photo or select image</p>
-                    <p class="text-[11px] text-[#8a8377]">JPG, PNG, WebP up to 1.5 MB</p>
+                  <div class="flex flex-col items-center">
+                    <svg class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
+                      Click or drag to attach incident photo
+                    </p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                      Supports JPG, PNG up to 5MB (not mandatory)
+                    </p>
                   </div>
                 </div>
               }
             </div>
-          </div>
 
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            [disabled]="isSubmitting"
-            class="w-full rounded-2xl bg-[#dc2626] hover:bg-[#b91c1c] text-white py-4 px-6 font-bold text-base transition shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-red-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            @if (isSubmitting) {
-              <span>Transmitting Emergency Request...</span>
-            } @else {
-              <span>🚨 Submit Emergency Help Request</span>
-              <span aria-hidden="true">→</span>
-            }
-          </button>
-
-          <p class="text-center text-xs text-[#736d63]">
-            {{ isOnline ? 'Your request goes straight to district emergency coordinators and nearby relief teams.' : 'Network offline: Your request is saved immediately on this phone and sent the second connection returns.' }}
-          </p>
-        </form>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- 2. EMERGENCY CONTACTS & DISPATCH HOTLINES      -->
-      <!-- ============================================== -->
-      <aside class="space-y-6">
-
-        <!-- Emergency Hotlines Card -->
-        <div class="rounded-[2rem] border border-[#e4ded4] bg-[#fffdf9] p-6 shadow-[0_12px_45px_rgba(40,36,29,0.06)] sm:p-7">
-          <div class="flex items-center justify-between mb-4 border-b border-[#eee9de] pb-3">
+            <!-- Additional Situation Notes -->
             <div>
-              <span class="text-[11px] font-extrabold uppercase tracking-wider text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
-                24/7 Lifeline
-              </span>
-              <h2 class="mt-1 font-serif text-xl font-bold tracking-tight text-[#1c1b18]">
-                Emergency Dial Contacts
-              </h2>
+              <label for="details" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                Additional Emergency Notes / Critical Requirements
+              </label>
+              <textarea
+                id="details"
+                rows="3"
+                formControlName="details"
+                placeholder="Mention water depth, whether elderly or patients are trapped, need for boats, power outages, food shortage, etc."
+                class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+              ></textarea>
             </div>
-            <span class="text-2xl">📞</span>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              [disabled]="isSubmitting"
+              class="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 shadow-sm hover:shadow transition active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+            >
+              @if (isSubmitting) {
+                <span>Routing to Dispatch Grid...</span>
+              } @else {
+                <span>Submit Emergency Request</span>
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              }
+            </button>
+
+            <p class="text-center text-[11px] text-slate-500 dark:text-slate-400">
+              AidLinkX guarantees that all submitted incident coordinates are strictly transmitted to verified humanitarian responders.
+            </p>
+
+          </form>
+          <!-- FORM END -->
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: SITUATIONAL CRISIS AWARENESS (BIHAR, KERALA, ETC.) & QUEUE -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- Active Disaster Zones in India -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                Active Disaster Relief Zones (India)
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Real-time regional situation briefings across monitored states.
+              </p>
+            </div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+              4 Active
+            </span>
           </div>
 
-          <p class="text-xs text-[#6e685c] mb-4">
-            If in direct danger or water is rising rapidly, call these official government and disaster control numbers immediately:
-          </p>
-
-          <div class="space-y-3">
-            @for (contact of emergencyContacts; track contact.number) {
-              <div class="rounded-xl border border-[#ded8cb] bg-[#faf8f4] p-3.5 transition hover:border-[#aaa294]">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-xl shrink-0">{{ contact.icon }}</span>
-                    <div>
-                      <h3 class="text-xs font-bold text-[#24221e]">{{ contact.name }}</h3>
-                      <p class="text-[11px] text-[#736d62]">{{ contact.category }}</p>
+          <div class="space-y-4">
+            @for (zone of disasterZones; track zone.id) {
+              <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col sm:flex-row gap-3 bg-slate-50/50 dark:bg-slate-800/40">
+                <img
+                  [src]="zone.imageUrl"
+                  [alt]="zone.title"
+                  class="h-32 sm:h-auto sm:w-36 object-cover shrink-0"
+                />
+                <div class="p-3 flex flex-col justify-between flex-1">
+                  <div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300">
+                        {{ zone.status }}
+                      </span>
+                      <span class="text-[11px] font-medium text-slate-500">{{ zone.disasterType }}</span>
                     </div>
+                    <h3 class="text-xs font-bold text-slate-900 dark:text-slate-100 mt-1.5">
+                      {{ zone.title }}
+                    </h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      {{ zone.description }}
+                    </p>
                   </div>
-                  <span class="shrink-0 text-xs font-extrabold px-2 py-0.5 rounded border {{ contact.badgeColor }}">
-                    {{ contact.number }}
-                  </span>
-                </div>
-
-                <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-[#ede7dc]">
-                  <a
-                    [href]="'tel:' + contact.number"
-                    class="inline-flex items-center gap-1 text-xs font-bold text-[#b91c1c] hover:underline"
-                  >
-                    <span>📞 Tap to Call</span>
-                  </a>
-                  <button
-                    type="button"
-                    (click)="copyEmergencyNumber(contact.number)"
-                    class="text-[11px] font-semibold text-[#666055] hover:text-[#1c1b18]"
-                  >
-                    {{ copiedNumber === contact.number ? '✓ Copied!' : 'Copy' }}
-                  </button>
+                  <div class="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <span class="text-[11px] text-slate-600 dark:text-slate-400 font-medium">{{ zone.region }}</span>
+                    <button
+                      type="button"
+                      (click)="selectDisasterZone(zone)"
+                      class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Request Here &rarr;
+                    </button>
+                  </div>
                 </div>
               </div>
             }
           </div>
         </div>
 
-        <!-- AidLinkX Offline-First Architecture Explainer -->
-        <div class="rounded-[2rem] border border-[#d6cfc2] bg-[#24221e] p-6 text-white sm:p-7 shadow-lg">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-[#3d3a33] text-sm">📡</span>
-            <p class="text-xs font-bold uppercase tracking-wider text-[#b8b2a5]">Why AidLinkX Works in Disasters</p>
-          </div>
-          <h3 class="font-serif text-xl font-bold tracking-tight text-[#fdfbf7]">
-            Never Lose a Call for Help
-          </h3>
-          <p class="mt-2 text-xs leading-relaxed text-[#c7c0b5]">
-            Cell towers often submerge or lose power during floods and cyclones. AidLinkX uses resilient local storage queuing: your request is immediately serialized on your device with a unique token and automatically bursts to responders the moment a millisecond of network connectivity is detected.
-          </p>
-
-          <div class="mt-5 border-t border-[#3d3a33] pt-4 flex items-center justify-between">
-            <span class="text-xs text-[#a39c90]">Are you a relief camp or coordinator?</span>
-            <a
-              routerLink="/coordinator-login"
-              class="rounded-lg bg-[#f5f2ea] text-[#24221e] px-3 py-1.5 text-xs font-bold hover:bg-white transition"
-            >
-              Coordinator Desk →
-            </a>
-          </div>
-        </div>
-
-        <!-- Feedback Box -->
-        <div class="rounded-2xl border border-[#ded8cb] bg-[#f5f2eb] p-5 text-xs">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="font-bold text-[#2e2b26]">Have thoughts on relief coordination?</p>
-              <p class="text-[#736d62] mt-0.5">Let us know how rescue efforts can be made faster.</p>
+        <!-- Offline Queue Information Card -->
+        @if (queuedItems.length > 0) {
+          <div class="rounded-2xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/30 p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                <svg class="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Local Offline Queue ({{ queuedItems.length }})
+              </h3>
+              @if (isOnline) {
+                <button
+                  type="button"
+                  (click)="triggerManualSync()"
+                  class="text-xs font-semibold text-amber-700 dark:text-amber-300 hover:underline"
+                >
+                  Sync Now
+                </button>
+              }
             </div>
-            <a routerLink="/feedback" class="rounded-lg bg-white border border-[#ded8cb] px-3 py-1.5 font-bold text-[#3c3830] hover:bg-[#ede8dc] shrink-0">
-              Feedback →
-            </a>
+
+            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+              @for (item of queuedItems; track item.request.clientRequestId) {
+                <div class="rounded-lg border border-amber-200/80 dark:border-amber-900/40 bg-white/80 dark:bg-slate-800/80 p-2.5 text-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ item.request.name }}</span>
+                    <span class="text-[10px] text-amber-700 dark:text-amber-400 font-mono">{{ item.request.priority }}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">{{ item.request.location }}</p>
+                </div>
+              }
+            </div>
           </div>
+        }
+
+        <!-- Humanitarian Response Protocols Note -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm text-xs text-slate-600 dark:text-slate-400 space-y-2.5">
+          <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Citizen Advisory &amp; Triage Protocol
+          </h3>
+          <p class="leading-relaxed">
+            AidLinkX operates in conjunction with certified National Disaster Response Force (NDRF) battalions, State Disaster Management Authorities (SDMA), and certified field NGOs.
+          </p>
+          <p class="leading-relaxed">
+            For critical water-rescue operations in Bihar flood zones or debris search in Kerala landslide terrain, keep mobile phones charged, maintain line-of-sight signal markers, and rely on official camp dispatch IDs.
+          </p>
         </div>
 
-      </aside>
+      </div>
+
     </div>
 
-    <!-- Bottom Features & Explainer Section -->
-    <section class="mt-14 border-t border-[#e2ddd4] pt-10">
-      <div class="grid gap-6 sm:grid-cols-3">
-        <div class="rounded-2xl border border-[#e4ded4] bg-white p-5 shadow-sm">
-          <span class="text-2xl">⚡</span>
-          <h3 class="mt-2 text-sm font-bold text-[#1c1b18]">Zero Barrier to Help</h3>
-          <p class="mt-1 text-xs leading-5 text-[#696358]">
-            No account required. In life-threatening emergencies, every second counts. Submit instantly as guest.
-          </p>
-        </div>
-        <div class="rounded-2xl border border-[#e4ded4] bg-white p-5 shadow-sm">
-          <span class="text-2xl">💾</span>
-          <h3 class="mt-2 text-sm font-bold text-[#1c1b18]">Device Safe Queuing</h3>
-          <p class="mt-1 text-xs leading-5 text-[#696358]">
-            Built with offline storage caching so disaster victims in blackout zones never experience failed submits.
-          </p>
-        </div>
-        <div class="rounded-2xl border border-[#e4ded4] bg-white p-5 shadow-sm">
-          <span class="text-2xl">🤝</span>
-          <h3 class="mt-2 text-sm font-bold text-[#1c1b18]">Unified Coordination</h3>
-          <p class="mt-1 text-xs leading-5 text-[#696358]">
-            Connects seamlessly with district authorities, volunteer boats, medical camps, and supply hubs in real-time.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="mt-12 border-t border-[#e2ddd4] py-8 text-xs text-[#787165] flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-7 w-auto opacity-70" />
-        <span>AidLinkX Humanitarian Disaster Response System</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a routerLink="/feedback" class="hover:underline">Submit Feedback</a>
-        <span>·</span>
-        <a routerLink="/coordinator-login" class="hover:underline">Coordinator Login</a>
-        <span>·</span>
-        <a routerLink="/camp-worker" class="hover:underline">Camp Worker</a>
-      </div>
-    </footer>
   </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-16 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <!-- Col 1: Brand & Mission -->
+        <div class="md:col-span-2 space-y-3">
+          <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-8 w-auto" />
+          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md">
+            AidLinkX is an open disaster relief coordination and humanitarian grid designed for high-availability crisis response, field triage, and offline-resilient civilian distress routing.
+          </p>
+          <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Language: <span class="font-normal text-slate-500">English (India &amp; Global Operations)</span>
+          </p>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div class="space-y-2 text-xs">
+          <h4 class="font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">Quick Access</h4>
+          <ul class="space-y-1.5 text-slate-600 dark:text-slate-400">
+            <li><a routerLink="/user" class="hover:text-blue-600 dark:hover:text-blue-400">Resident Help Desk</a></li>
+            <li><a routerLink="/coordinator-login" class="hover:text-blue-600 dark:hover:text-blue-400">Coordinator Command Login</a></li>
+            <li><a routerLink="/camp-worker" class="hover:text-blue-600 dark:hover:text-blue-400">Relief Camp Operations</a></li>
+            <li><a routerLink="/feedback" class="hover:text-blue-600 dark:hover:text-blue-400">Community Feedback &amp; Review</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Legal & Governance -->
+        <div class="space-y-2 text-xs">
+          <h4 class="font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">Legal &amp; Trust</h4>
+          <ul class="space-y-1.5 text-slate-600 dark:text-slate-400">
+            <li>
+              <button type="button" (click)="showTermsModal = true" class="hover:text-blue-600 dark:hover:text-blue-400">
+                Terms of Service
+              </button>
+            </li>
+            <li>
+              <button type="button" (click)="showPrivacyModal = true" class="hover:text-blue-600 dark:hover:text-blue-400">
+                Privacy Policy
+              </button>
+            </li>
+            <li>
+              <span class="text-slate-400">Emergency Protocol ISO-22320 Compliant</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Copyright Bar -->
+      <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+        <p>
+          &copy; 2026 AidLinkX. Developed by <span class="font-semibold text-slate-800 dark:text-slate-200">Naiyar Hasnain</span>. All rights reserved.
+        </p>
+        <p class="text-[11px]">
+          Designed for humanitarian emergency resilience and disaster life-safety.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== RESIDENT AUTH MODAL (OPTIONAL) ==================== -->
+  @if (showAuthPanel) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" (click)="closeAuthPanel()">
+      <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl border border-slate-200 dark:border-slate-800" (click)="$event.stopPropagation()">
+        
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">
+              {{ authMode === 'login' ? 'Resident Sign In' : 'Create Resident Account' }}
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Registration is completely optional. Guests can submit requests directly.
+            </p>
+          </div>
+          <button type="button" (click)="closeAuthPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        @if (authErrorMessage) {
+          <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-xs text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900">
+            {{ authErrorMessage }}
+          </div>
+        }
+
+        <form [formGroup]="authForm" (ngSubmit)="submitAuth()" class="space-y-4">
+          @if (authMode === 'register') {
+            <div>
+              <label for="authName" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+              <input id="authName" type="text" formControlName="name" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:border-blue-600" placeholder="Your name" />
+            </div>
+          }
+
+          <div>
+            <label for="authIdentifier" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email or Mobile Number</label>
+            <input id="authIdentifier" type="text" formControlName="identifier" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:border-blue-600" placeholder="name@example.com or mobile number" />
+          </div>
+
+          <div>
+            <label for="authPassword" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+            <input id="authPassword" type="password" formControlName="password" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm outline-none focus:border-blue-600" placeholder="Minimum 6 characters" />
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="isAuthSubmitting"
+            class="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 text-sm transition"
+          >
+            {{ isAuthSubmitting ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account') }}
+          </button>
+        </form>
+
+        <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+          <span class="text-slate-500">
+            {{ authMode === 'login' ? "Don't have an account?" : 'Already registered?' }}
+          </span>
+          <button
+            type="button"
+            (click)="switchAuthMode(authMode === 'login' ? 'register' : 'login')"
+            class="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {{ authMode === 'login' ? 'Register Now' : 'Sign In Instead' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- ==================== TERMS OF SERVICE MODAL ==================== -->
+  @if (showTermsModal) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" (click)="showTermsModal = false">
+      <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">AidLinkX Terms of Service</h3>
+          <button type="button" (click)="showTermsModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p><strong>1. Acceptance of Terms:</strong> By utilizing the AidLinkX emergency coordination platform, you acknowledge that this service is intended for disaster relief, search &amp; rescue logistics, and crisis mitigation.</p>
+          <p><strong>2. Emergency Communication Priority:</strong> AidLinkX is designed to assist civilian communities, National Disaster Response Force (NDRF), and local authorities. Submitting false distress reports or hoaxes constitutes a severe legal violation punishable under the Disaster Management Act, 2005.</p>
+          <p><strong>3. Offline Functionality:</strong> When offline, assistance requests are queued securely on your device's browser cache. While AidLinkX will transmit these upon reconnection, immediate life-threatening events should also be reported directly via telephone helpline 112 where network permits.</p>
+          <p><strong>4. Intellectual Property &amp; Authorship:</strong> &copy; 2026 AidLinkX. Developed by Naiyar Hasnain. All humanitarian logistics architectures and UI components are protected under applicable copyright regulations.</p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+          <button type="button" (click)="showTermsModal = false" class="rounded-xl bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 text-xs font-semibold">
+            Close &amp; Return
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== PRIVACY POLICY MODAL ==================== -->
+  @if (showPrivacyModal) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" (click)="showPrivacyModal = false">
+      <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">AidLinkX Privacy Policy</h3>
+          <button type="button" (click)="showPrivacyModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p><strong>1. Data Collection:</strong> When you submit an aid request, AidLinkX collects names, phone numbers, GPS coordinates, landmarks, and situational descriptions solely for the purpose of dispatching search, rescue, and medical teams.</p>
+          <p><strong>2. Data Sharing:</strong> Your emergency information is strictly shared only with authorized district emergency response coordinators, registered camp managers, and state disaster relief personnel.</p>
+          <p><strong>3. Zero Commercialization:</strong> AidLinkX does not sell, market, or commercialize citizen data. All information is retained purely for disaster audit, relief distribution accounting, and life-safety operations.</p>
+          <p><strong>4. Contact &amp; Oversight:</strong> Project oversight and data inquiries may be addressed to developer Naiyar Hasnain under AidLinkX humanitarian operations governance.</p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+          <button type="button" (click)="showPrivacyModal = false" class="rounded-xl bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 text-xs font-semibold">
+            Close &amp; Return
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

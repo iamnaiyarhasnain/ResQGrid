@@ -8,13 +8,24 @@ import {
   QueuedHelpRequest
 } from '../../services/help-request.service';
 import { AuthService, AuthUser } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 export interface EmergencyContact {
   name: string;
   number: string;
   category: string;
   badgeColor: string;
-  icon: string;
+  iconType: 'police' | 'medical' | 'fire' | 'disaster' | 'dispatch';
+}
+
+export interface DisasterZone {
+  id: string;
+  title: string;
+  region: string;
+  disasterType: string;
+  imageUrl: string;
+  status: string;
+  description: string;
 }
 
 @Component({
@@ -37,11 +48,14 @@ export class UserDashboard implements OnInit {
   queuedRequestCount = 0;
   queuedItems: QueuedHelpRequest[] = [];
   showAuthPanel = false;
+  showTermsModal = false;
+  showPrivacyModal = false;
   authMode: 'login' | 'register' = 'register';
   currentUser: AuthUser | null = null;
   photoData = '';
   photoName = '';
   copiedNumber = '';
+  isDetectingLocation = false;
 
   readonly disasterTypes = [
     'Flood / Inundation',
@@ -70,44 +84,84 @@ export class UserDashboard implements OnInit {
     {
       name: 'National Emergency Helpline',
       number: '112',
-      category: 'Immediate Police & Rescue',
-      badgeColor: 'bg-red-100 text-red-700 border-red-200',
-      icon: '🚨'
+      category: 'Police & Combined Rescue',
+      badgeColor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900',
+      iconType: 'police'
     },
     {
-      name: 'Ambulance & Medical Emergency',
+      name: 'Ambulance & Trauma Care',
       number: '108',
-      category: 'Paramedics & Hospital Transfer',
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      icon: '🚑'
+      category: 'Medical Evacuation & Paramedics',
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900',
+      iconType: 'medical'
     },
     {
       name: 'Fire & Rescue Service',
       number: '101',
-      category: 'Fire, Collapse & Extrication',
-      badgeColor: 'bg-orange-100 text-orange-800 border-orange-200',
-      icon: '🚒'
+      category: 'Fire Extinction & Collapse Rescue',
+      badgeColor: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900',
+      iconType: 'fire'
     },
     {
-      name: 'State Disaster Response Control',
+      name: 'State Disaster Response (SDMA/NDMA)',
       number: '1070',
-      category: 'Disaster Management HQ',
-      badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
-      icon: '🌊'
+      category: 'Disaster Coordination HQ',
+      badgeColor: 'bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900',
+      iconType: 'disaster'
     },
     {
-      name: 'AidLinkX 24/7 Relief Dispatch',
+      name: 'AidLinkX 24/7 Rapid Dispatch',
       number: '+91 800 233 5465',
-      category: 'Humanitarian Grid Support Desk',
-      badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
-      icon: '📡'
+      category: 'Humanitarian Operations Desk',
+      badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900',
+      iconType: 'dispatch'
+    }
+  ];
+
+  readonly disasterZones: DisasterZone[] = [
+    {
+      id: 'bihar-flood',
+      title: 'Bihar River Basin Inundation',
+      region: 'Kosi & Ganga River Basins, Bihar',
+      disasterType: 'Flood / Inundation',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/NDRF_in_Bihar_Flood.jpg/800px-NDRF_in_Bihar_Flood.jpg',
+      status: 'High Alert',
+      description: 'Severe seasonal waterlogging and embankment overflow. NDRF water rescue units active.'
+    },
+    {
+      id: 'kerala-landslide',
+      title: 'Wayanad Mountain Landslide',
+      region: 'Western Ghats, Wayanad, Kerala',
+      disasterType: 'Landslide / Mudflow',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Wayanad_landslide.jpg/800px-Wayanad_landslide.jpg',
+      status: 'Critical Relief Zone',
+      description: 'Heavy torrential precipitation causing slope collapse and debris flow across access corridors.'
+    },
+    {
+      id: 'coastal-cyclone',
+      title: 'Bay of Bengal Cyclonic System',
+      region: 'Odisha & Coastal Andhra Pradesh',
+      disasterType: 'Cyclone / Severe Storm',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Cyclone_Fani_approaching_India.jpg/800px-Cyclone_Fani_approaching_India.jpg',
+      status: 'Storm Warning',
+      description: 'High-velocity gusts and storm surge warnings. Evacuation shelter grid active across low-lying districts.'
+    },
+    {
+      id: 'kerala-monsoon',
+      title: 'Monsoon Urban Flash Flooding',
+      region: 'Ernakulam & Thrissur, Kerala',
+      disasterType: 'Cloudburst / Flash Flood',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Flooded-home-companypady-2018-kerala-floods.jpg/800px-Flooded-home-companypady-2018-kerala-floods.jpg',
+      status: 'Active Evacuation',
+      description: 'Intense precipitation causing river backflow into residential colonies and transportation cut-offs.'
     }
   ];
 
   constructor(
     private formBuilder: FormBuilder,
     private helpRequestService: HelpRequestService,
-    private authService: AuthService
+    private authService: AuthService,
+    public themeService: ThemeService
   ) {
     this.currentUser = this.authService.currentUser;
 
@@ -118,69 +172,103 @@ export class UserDashboard implements OnInit {
       location: ['', [Validators.required, Validators.minLength(3)]],
       landmark: [''],
       peopleCount: [1, [Validators.required, Validators.min(1), Validators.max(5000)]],
-      helpType: ['', Validators.required],
       priority: ['HIGH', Validators.required],
       disasterType: ['Flood / Inundation', Validators.required],
-      disasterDetails: [''],
-      description: ['', [Validators.required, Validators.minLength(5)]]
+      disasterTypeOther: [''],
+      details: ['']
     });
 
     this.authForm = this.formBuilder.group({
       name: [''],
-      email: [''],
-      phone: [''],
-      identifier: [''],
+      identifier: ['', [Validators.required]],
+      phone: ['', [Validators.pattern(/^[0-9+ -]{7,16}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   ngOnInit(): void {
-    this.updateQueueCount();
+    this.queuedRequestCount = this.helpRequestService.getQueuedRequestCount();
+    this.queuedItems = this.helpRequestService.getQueuedRequests();
 
-    this.helpRequestService.queuedRequestCount$.subscribe(count => {
+    this.helpRequestService.queuedRequestCount$.subscribe((count) => {
       this.queuedRequestCount = count;
       this.queuedItems = this.helpRequestService.getQueuedRequests();
     });
 
-    this.helpRequestService.syncCompleted$.subscribe(result => {
-      this.successMessage = `Successfully synced ${result.syncedCount} offline request(s) with AidLinkX relief responders!`;
+    this.helpRequestService.syncCompleted$.subscribe(({ syncedCount }) => {
+      if (syncedCount > 0) {
+        this.successMessage = `Successfully synced ${syncedCount} queued emergency request(s) to dispatch headquarters.`;
+        setTimeout(() => (this.successMessage = ''), 7000);
+      }
     });
+
+    this.currentUser = this.authService.currentUser;
+    if (this.currentUser) {
+      if (!this.helpRequestForm.get('name')?.value) {
+        this.helpRequestForm.patchValue({ name: this.currentUser.name });
+      }
+      if (!this.helpRequestForm.get('contactPhone')?.value && this.currentUser.phone) {
+        this.helpRequestForm.patchValue({ contactPhone: this.currentUser.phone });
+      }
+    }
   }
 
   @HostListener('window:online')
-  onOnline(): void {
+  onNetworkOnline(): void {
     this.isOnline = true;
-    this.successMessage = 'Network connection restored. Syncing offline emergency requests with relief dispatch...';
-    this.helpRequestService.flushQueuedRequests();
   }
 
   @HostListener('window:offline')
-  onOffline(): void {
+  onNetworkOffline(): void {
     this.isOnline = false;
   }
 
-  updateQueueCount(): void {
-    this.queuedRequestCount = this.helpRequestService.getQueuedRequestCount();
-    this.queuedItems = this.helpRequestService.getQueuedRequests();
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
-  onDisasterTypeChange(): void {
-    const val = this.helpRequestForm.get('disasterType')?.value;
-    const detailsControl = this.helpRequestForm.get('disasterDetails');
-
-    if (val === 'Other') {
-      detailsControl?.setValidators([Validators.required, Validators.minLength(3)]);
-    } else {
-      detailsControl?.clearValidators();
-      detailsControl?.setValue('');
+  selectDisasterZone(zone: DisasterZone): void {
+    this.helpRequestForm.patchValue({
+      disasterType: zone.disasterType,
+      location: zone.region,
+      landmark: zone.title
+    });
+    // Scroll smoothly to form
+    const formElement = document.getElementById('aid-request-form');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
     }
-    detailsControl?.updateValueAndValidity();
+  }
+
+  detectGPS(): void {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+    this.isDetectingLocation = true;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.isDetectingLocation = false;
+        const lat = position.coords.latitude.toFixed(5);
+        const lng = position.coords.longitude.toFixed(5);
+        const existingLocation = this.helpRequestForm.get('location')?.value;
+        const coordsText = `GPS: ${lat}, ${lng}`;
+        this.helpRequestForm.patchValue({
+          location: existingLocation ? `${existingLocation} (${coordsText})` : coordsText
+        });
+      },
+      (err) => {
+        this.isDetectingLocation = false;
+        console.warn('Geolocation error:', err);
+        alert('Could not retrieve GPS coordinates. Please type your location manually.');
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
   }
 
   toggleSpecialNeed(id: string): void {
-    const index = this.selectedSpecialNeeds.indexOf(id);
-    if (index >= 0) {
-      this.selectedSpecialNeeds.splice(index, 1);
+    if (this.selectedSpecialNeeds.includes(id)) {
+      this.selectedSpecialNeeds = this.selectedSpecialNeeds.filter((item) => item !== id);
     } else {
       this.selectedSpecialNeeds.push(id);
     }
@@ -192,28 +280,19 @@ export class UserDashboard implements OnInit {
 
   onPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Please choose a valid image file (JPG, PNG, WebP).';
-      input.value = '';
-      return;
-    }
-
-    if (file.size > 1_600_000) {
-      this.errorMessage = 'Photo must be smaller than 1.5 MB for rapid mobile transmission and offline caching.';
-      input.value = '';
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.photoData = String(reader.result);
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Photo must be less than 5MB.');
+        return;
+      }
       this.photoName = file.name;
-      this.errorMessage = '';
-    };
-    reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoData = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   removePhoto(): void {
@@ -221,195 +300,174 @@ export class UserDashboard implements OnInit {
     this.photoName = '';
   }
 
-  retryQueuedRequests(): void {
-    if (!this.isOnline) {
-      this.successMessage = 'Your requests remain safely stored on this device and will transmit once connected.';
-      return;
-    }
-    this.successMessage = 'Attempting to transmit queued requests to AidLinkX dispatch now...';
-    this.helpRequestService.flushQueuedRequests();
-  }
-
-  onSubmit(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
-    this.requestId = null;
-    this.lastClientRequestId = '';
-
-    if (this.helpRequestForm.invalid) {
-      this.helpRequestForm.markAllAsTouched();
-      this.errorMessage = 'Please fill in all highlighted emergency fields before submitting.';
-      return;
-    }
-
-    const formVal = this.helpRequestForm.value;
-    const clientRequestId = this.createClientRequestId();
-    const specialNeedsText = this.selectedSpecialNeeds.length > 0
-      ? this.selectedSpecialNeeds
-          .map(id => this.specialNeedsOptions.find(opt => opt.id === id)?.label)
-          .filter(Boolean)
-          .join(', ')
-      : undefined;
-
-    const request: HelpRequestCreateRequest = {
-      clientRequestId,
-      name: formVal.name.trim(),
-      contactPhone: formVal.contactPhone.trim(),
-      alternateContact: formVal.alternateContact?.trim() || undefined,
-      location: formVal.location.trim(),
-      landmark: formVal.landmark?.trim() || undefined,
-      peopleCount: Number(formVal.peopleCount),
-      helpType: formVal.helpType,
-      priority: formVal.priority,
-      disasterType: formVal.disasterType === 'Other' ? 'OTHER' : formVal.disasterType,
-      disasterDetails: formVal.disasterDetails?.trim() || undefined,
-      specialNeeds: specialNeedsText,
-      description: formVal.description.trim(),
-      photoData: this.photoData || undefined
-    };
-
-    if (!navigator.onLine) {
-      this.saveRequestOffline(
-        request,
-        `Offline mode active: Help request safely saved on your device (Client ID: ${clientRequestId.slice(0, 8)}). It will be sent automatically when your internet connection returns.`
-      );
-      return;
-    }
-
-    this.isSubmitting = true;
-    this.helpRequestService.createHelpRequest(request).subscribe({
-      next: (response: HelpRequestResponse) => {
-        this.isSubmitting = false;
-        this.requestId = response.id;
-        this.lastClientRequestId = clientRequestId;
-        this.successMessage = `Emergency help request submitted successfully! Relief coordinators have been alerted with reference #${response.id}.`;
-        this.resetHelpForm();
-      },
-      error: (error) => {
-        if (this.isConnectivityFailure(error)) {
-          this.saveRequestOffline(
-            request,
-            `Network unreachable: Your request is safely queued on this device (ID: ${clientRequestId.slice(0, 8)}) and will automatically synchronize with responders as soon as connection is available.`
-          );
-        } else {
-          this.isSubmitting = false;
-          this.errorMessage = error?.error?.message || 'Unable to submit request right now. Saved a local copy just in case.';
-          this.helpRequestService.queueRequest(request);
-          this.updateQueueCount();
-        }
-      }
+  copyEmergencyNumber(number: string): void {
+    navigator.clipboard.writeText(number).then(() => {
+      this.copiedNumber = number;
+      setTimeout(() => (this.copiedNumber = ''), 2500);
     });
   }
 
-  openAuthPanel(mode: 'login' | 'register' = 'register'): void {
+  triggerManualSync(): void {
+    this.helpRequestService.flushQueuedRequests();
+  }
+
+  openAuthPanel(mode: 'login' | 'register'): void {
     this.authMode = mode;
     this.authErrorMessage = '';
     this.showAuthPanel = true;
   }
 
-  setAuthMode(mode: 'login' | 'register'): void {
-    this.authMode = mode;
-    this.authErrorMessage = '';
-    this.authForm.reset();
+  closeAuthPanel(): void {
+    this.showAuthPanel = false;
   }
 
-  onAuthSubmit(): void {
+  switchAuthMode(mode: 'login' | 'register'): void {
+    this.authMode = mode;
     this.authErrorMessage = '';
-    const formVal = this.authForm.value;
+  }
 
-    if (this.authMode === 'register') {
-      if (!formVal.name || (!formVal.email && !formVal.phone) || this.authForm.get('password')?.invalid) {
-        this.authForm.markAllAsTouched();
-        this.authErrorMessage = 'Please enter your name, password, and at least an email address or mobile phone.';
+  submitAuth(): void {
+    this.authErrorMessage = '';
+    if (this.authMode === 'login') {
+      const { identifier, password } = this.authForm.value;
+      if (!identifier || !password) {
+        this.authErrorMessage = 'Please enter your email/phone and password.';
         return;
       }
       this.isAuthSubmitting = true;
-      this.authService.register({
-        name: formVal.name.trim(),
-        email: formVal.email?.trim() || undefined,
-        phone: formVal.phone?.trim() || undefined,
-        password: formVal.password
-      }).subscribe({
-        next: (resp) => this.completeAuthentication(resp.user),
-        error: (err) => this.handleAuthError(err)
+      this.authService.login(identifier.trim(), password).subscribe({
+        next: (res) => {
+          this.isAuthSubmitting = false;
+          this.currentUser = res.user;
+          this.showAuthPanel = false;
+        },
+        error: (err) => {
+          this.isAuthSubmitting = false;
+          this.authErrorMessage = err?.error?.message || 'Invalid credentials. Please try again.';
+        }
       });
-      return;
+    } else {
+      const { name, identifier, phone, password } = this.authForm.value;
+      if (!identifier || !password) {
+        this.authErrorMessage = 'Please fill in required fields.';
+        return;
+      }
+      this.isAuthSubmitting = true;
+      const isEmail = identifier.includes('@');
+      this.authService.register({
+        name: name?.trim() || identifier.split('@')[0],
+        email: isEmail ? identifier.trim() : undefined,
+        phone: !isEmail ? identifier.trim() : (phone?.trim() || undefined),
+        password: password
+      }).subscribe({
+        next: (res) => {
+          this.isAuthSubmitting = false;
+          this.currentUser = res.user;
+          this.showAuthPanel = false;
+        },
+        error: (err) => {
+          this.isAuthSubmitting = false;
+          this.authErrorMessage = err?.error?.message || 'Registration failed. Try signing in directly.';
+        }
+      });
     }
-
-    if (!formVal.identifier || this.authForm.get('password')?.invalid) {
-      this.authForm.markAllAsTouched();
-      this.authErrorMessage = 'Please enter your email or phone number and your password.';
-      return;
-    }
-
-    this.isAuthSubmitting = true;
-    this.authService.login(formVal.identifier.trim(), formVal.password).subscribe({
-      next: (resp) => this.completeAuthentication(resp.user),
-      error: (err) => this.handleAuthError(err)
-    });
   }
 
   logout(): void {
     this.authService.logout();
     this.currentUser = null;
-    this.successMessage = 'You have signed out. You can continue submitting emergency requests as a guest without any account.';
   }
 
-  copyEmergencyNumber(num: string): void {
-    navigator.clipboard?.writeText(num);
-    this.copiedNumber = num;
-    setTimeout(() => {
-      if (this.copiedNumber === num) this.copiedNumber = '';
-    }, 2000);
-  }
+  submitHelpRequest(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
 
-  private completeAuthentication(user: AuthUser): void {
-    this.currentUser = user;
-    this.showAuthPanel = false;
-    this.isAuthSubmitting = false;
-    this.successMessage = `Signed in as ${user.name}. You can submit and track your relief requests.`;
-    if (!this.helpRequestForm.get('name')?.value) {
-      this.helpRequestForm.patchValue({ name: user.name });
+    if (this.helpRequestForm.invalid) {
+      this.helpRequestForm.markAllAsTouched();
+      this.errorMessage = 'Please complete all required fields marked in red.';
+      return;
     }
-    if (user.phone && !this.helpRequestForm.get('contactPhone')?.value) {
-      this.helpRequestForm.patchValue({ contactPhone: user.phone });
+
+    const val = this.helpRequestForm.value;
+    const finalDisasterType = val.disasterType === 'Other' && val.disasterTypeOther?.trim()
+      ? `Other: ${val.disasterTypeOther.trim()}`
+      : val.disasterType;
+
+    const requestPayload: HelpRequestCreateRequest = {
+      name: val.name.trim(),
+      contactPhone: val.contactPhone?.trim(),
+      alternateContact: val.alternateContact?.trim() || undefined,
+      location: val.location.trim(),
+      landmark: val.landmark?.trim() || undefined,
+      peopleCount: Number(val.peopleCount) || 1,
+      helpType: 'RESCUE_AND_SUPPLIES',
+      priority: val.priority,
+      disasterType: finalDisasterType,
+      specialNeeds: this.selectedSpecialNeeds.length > 0 ? this.selectedSpecialNeeds.join(', ') : undefined,
+      description: val.details?.trim() || `Emergency assistance requested for ${finalDisasterType}`,
+      photoData: this.photoData || undefined,
+      clientRequestId: this.lastClientRequestId || this.generateClientRequestId()
+    };
+
+    this.isSubmitting = true;
+
+    if (!navigator.onLine) {
+      this.helpRequestService.queueRequest(requestPayload);
+      this.isSubmitting = false;
+      this.requestId = null;
+      this.successMessage = 'Offline: Your emergency request is stored locally and will automatically transmit upon connection.';
+      this.helpRequestForm.reset({
+        name: this.currentUser?.name || '',
+        contactPhone: this.currentUser?.phone || '',
+        alternateContact: '',
+        location: '',
+        landmark: '',
+        peopleCount: 1,
+        priority: 'HIGH',
+        disasterType: 'Flood / Inundation',
+        disasterTypeOther: '',
+        details: ''
+      });
+      this.selectedSpecialNeeds = [];
+      this.photoData = '';
+      this.photoName = '';
+      return;
     }
-  }
 
-  private handleAuthError(error: any): void {
-    this.isAuthSubmitting = false;
-    this.authErrorMessage = error?.error?.message || 'Authentication failed. Please check credentials or register a new account.';
-  }
-
-  private saveRequestOffline(request: HelpRequestCreateRequest, message: string): void {
-    this.helpRequestService.queueRequest(request);
-    this.updateQueueCount();
-    this.successMessage = message;
-    this.isSubmitting = false;
-    this.resetHelpForm();
-  }
-
-  private resetHelpForm(): void {
-    this.helpRequestForm.reset({
-      name: this.currentUser?.name || '',
-      contactPhone: this.currentUser?.phone || '',
-      peopleCount: 1,
-      priority: 'HIGH',
-      disasterType: 'Flood / Inundation'
+    this.helpRequestService.createHelpRequest(requestPayload).subscribe({
+      next: (res: HelpRequestResponse) => {
+        this.isSubmitting = false;
+        this.requestId = res.id;
+        this.successMessage = `Emergency dispatch ID #${res.id} generated! Response teams have been notified.`;
+        this.helpRequestForm.reset({
+          name: this.currentUser?.name || '',
+          contactPhone: this.currentUser?.phone || '',
+          alternateContact: '',
+          location: '',
+          landmark: '',
+          peopleCount: 1,
+          priority: 'HIGH',
+          disasterType: 'Flood / Inundation',
+          disasterTypeOther: '',
+          details: ''
+        });
+        this.selectedSpecialNeeds = [];
+        this.photoData = '';
+        this.photoName = '';
+        this.lastClientRequestId = '';
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        console.warn('Live submit failed, queueing offline:', err);
+        this.helpRequestService.queueRequest(requestPayload);
+        this.successMessage = 'Network interruption detected. Your emergency request has been safely queued and will sync automatically.';
+      }
     });
-    this.selectedSpecialNeeds = [];
-    this.removePhoto();
-    this.onDisasterTypeChange();
   }
 
-  private isConnectivityFailure(error: any): boolean {
-    return !navigator.onLine || error?.status === 0 || error?.name === 'TimeoutError';
-  }
-
-  private createClientRequestId(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return `aid-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  private generateClientRequestId(): string {
+    const rand = Math.random().toString(36).substring(2, 10);
+    this.lastClientRequestId = `hr-${Date.now()}-${rand}`;
+    return this.lastClientRequestId;
   }
 }

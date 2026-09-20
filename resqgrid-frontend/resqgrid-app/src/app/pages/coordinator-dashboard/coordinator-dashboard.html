@@ -1,32 +1,34 @@
-<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
 
   <!-- Header -->
-  <header class="border-b border-[#e2ddd4] bg-[#fffdf8] sticky top-0 z-30">
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-30 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex items-center gap-3">
-          <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 w-auto" />
-          <div class="border-l border-[#ded8cb] pl-3">
-            <p class="text-xs font-bold uppercase tracking-wider text-[#736d62]">
+          <a routerLink="/user">
+            <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 w-auto" />
+          </a>
+          <div class="border-l border-slate-200 dark:border-slate-700 pl-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
               {{ coordinatorTitle }}
             </p>
-            <p class="text-[11px] text-[#7a7469]">
-              Relief Dispatch &amp; Operations Command
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+              Disaster Relief Operations Command
             </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3 text-xs sm:text-sm">
-          <a routerLink="/user" class="font-bold text-[#5c564c] hover:text-[#1c1b18] px-2.5 py-1.5 rounded-lg hover:bg-[#ede8dc] transition">
-            Resident Help Desk
+          <a routerLink="/user" class="font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Resident Desk
           </a>
-          <a routerLink="/feedback" class="font-bold text-[#5c564c] hover:text-[#1c1b18] px-2.5 py-1.5 rounded-lg hover:bg-[#ede8dc] transition">
-            View Feedback
+          <a routerLink="/feedback" class="font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Feedback
           </a>
           <button
             type="button"
             (click)="logout()"
-            class="rounded-lg border border-[#d6cfc3] bg-white px-3 py-1.5 font-bold text-[#44413b] hover:bg-[#ede8dc] transition"
+            class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
           >
             Sign Out
           </button>
@@ -38,13 +40,13 @@
   <!-- Photo Preview Modal -->
   @if (activePhoto) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" (click)="closePhoto()">
-      <div class="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl bg-white p-2" (click)="$event.stopPropagation()">
+      <div class="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl bg-white dark:bg-slate-900 p-2" (click)="$event.stopPropagation()">
         <button
           type="button"
           (click)="closePhoto()"
-          class="absolute top-4 right-4 z-10 rounded-full bg-black/60 text-white px-3 py-1 text-sm font-bold hover:bg-black"
+          class="absolute top-4 right-4 z-10 rounded-full bg-slate-900/80 text-white px-3 py-1 text-xs font-bold hover:bg-black"
         >
-          ✕ Close
+          Close
         </button>
         <img [src]="activePhoto" alt="Resident Disaster Reference Photo" class="max-h-[85vh] w-auto rounded-xl object-contain mx-auto" />
       </div>
@@ -57,102 +59,104 @@
     <!-- Title & Controls -->
     <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
       <div>
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#fbeae7] border border-[#f5c7be] px-3 py-1 text-xs font-bold text-[#b91c1c]">
-          <span class="h-2 w-2 rounded-full bg-[#dc2626] animate-pulse"></span>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300">
+          <span class="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
           Live Tactical Coordination
         </span>
-        <h1 class="mt-2 font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#1c1b18]">
+        <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
           Response Command Overview
         </h1>
-        <p class="text-xs sm:text-sm text-[#666055] mt-1">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
           Real-time triage of civilian distress calls and camp resource requests across the AidLinkX grid.
         </p>
       </div>
 
       <!-- Priority Filter -->
       <div class="flex items-center gap-2">
-        <label for="priorityFilter" class="text-xs font-bold text-[#44413b]">Filter Urgency:</label>
+        <label for="priorityFilter" class="text-xs font-bold text-slate-700 dark:text-slate-300">Filter Urgency:</label>
         <select
           id="priorityFilter"
-          class="border border-[#d8d1c5] rounded-xl px-3.5 py-2 text-xs font-bold bg-white text-[#24221e] outline-none focus:ring-2 focus:ring-[#24221e]"
+          class="border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 outline-none focus:border-blue-600"
           (change)="onPriorityFilterChange($event)"
         >
           <option value="ALL">All Priorities</option>
-          <option value="CRITICAL">🔴 Critical Only</option>
-          <option value="HIGH">🟠 High Only</option>
-          <option value="NORMAL">🟢 Normal Only</option>
+          <option value="CRITICAL">Critical Only</option>
+          <option value="HIGH">High Only</option>
+          <option value="NORMAL">Normal Only</option>
         </select>
       </div>
     </div>
 
     <!-- Summary Metrics -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
-        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Civilian Help Calls</p>
-        <p class="text-3xl font-extrabold text-[#1c1b18] mt-2">{{ totalHelpRequests }}</p>
-        <span class="text-[11px] text-red-600 font-semibold">{{ criticalHelpRequests }} critical rescues</span>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Civilian Help Calls</p>
+        <p class="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">{{ totalHelpRequests }}</p>
+        <span class="text-xs text-red-600 font-semibold">{{ criticalHelpRequests }} critical rescues</span>
       </div>
 
-      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
-        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Camp Supply Demands</p>
-        <p class="text-3xl font-extrabold text-[#1c1b18] mt-2">{{ totalRequests }}</p>
-        <span class="text-[11px] text-amber-600 font-semibold">{{ pendingRequests }} awaiting dispatch</span>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Camp Supply Demands</p>
+        <p class="text-3xl font-extrabold text-slate-900 dark:text-slate-100 mt-2">{{ totalRequests }}</p>
+        <span class="text-xs text-amber-600 font-semibold">{{ pendingRequests }} awaiting dispatch</span>
       </div>
 
-      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
-        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Pending Tasks</p>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Tasks</p>
         <p class="text-3xl font-extrabold text-amber-600 mt-2">{{ pendingRequests }}</p>
-        <span class="text-[11px] text-[#736d62]">Awaiting first responder action</span>
+        <span class="text-xs text-slate-500">Awaiting first responder action</span>
       </div>
 
-      <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 shadow-sm">
-        <p class="text-xs font-bold text-[#706b60] uppercase tracking-wider">Aids Delivered</p>
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aids Delivered</p>
         <p class="text-3xl font-extrabold text-emerald-600 mt-2">{{ deliveredRequests }}</p>
-        <span class="text-[11px] text-emerald-700 font-semibold">Completed relief missions</span>
+        <span class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">Completed relief missions</span>
       </div>
     </div>
 
     <!-- Section 1: RESIDENT HELP REQUESTS -->
     <section class="mb-12">
-      <div class="flex items-center justify-between mb-4 border-b border-[#e2ddd4] pb-3">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
         <div>
-          <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#1c1b18] flex items-center gap-2">
-            <span>🆘</span> Resident Distress &amp; Rescue Requests
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Resident Distress &amp; Rescue Requests
           </h2>
-          <p class="text-xs text-[#6e685c] mt-0.5">Direct SOS submissions from trapped citizens and affected families.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Direct SOS submissions from trapped citizens and affected families.</p>
         </div>
-        <span class="text-xs font-bold text-[#5c564c] bg-[#ede7dc] px-3 py-1 rounded-full">
+        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           {{ filteredHelpRequests.length }} requests
         </span>
       </div>
 
       @if (filteredHelpRequests.length === 0) {
-        <div class="bg-white rounded-2xl border border-[#e4ded4] p-8 text-center">
-          <span class="text-4xl">🕊️</span>
-          <p class="text-sm font-bold text-[#3c3933] mt-2">No active distress requests matching current filter.</p>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center text-slate-500">
+          <p class="text-sm font-semibold mt-2">No active distress requests matching current filter.</p>
         </div>
       }
 
       <div class="space-y-4">
         @for (request of filteredHelpRequests; track request.id) {
-          <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 sm:p-6 shadow-sm transition hover:shadow-md">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm transition hover:border-slate-300 dark:hover:border-slate-700">
             
             <!-- Top Row: ID, Priority, Status, Timestamp -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#f0ece3] pb-4 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 mb-4">
               <div class="flex items-center gap-3 flex-wrap">
-                <span class="text-base font-extrabold text-[#1c1b18]">
+                <span class="text-base font-bold text-slate-900 dark:text-slate-100">
                   SOS #{{ request.id }}
                 </span>
                 <span [class]="getPriorityClasses(request.priority)">
                   {{ request.priority }}
                 </span>
-                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#f0ede6] text-[#444038]">
-                  🌪️ {{ request.disasterType }}
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  {{ request.disasterType }}
                 </span>
               </div>
 
               <div class="text-xs flex items-center gap-2">
-                <span class="text-[#736d62]">Lifecycle Status:</span>
+                <span class="text-slate-500">Lifecycle Status:</span>
                 <span [class]="getStatusClasses(request.status)">
                   {{ request.status }}
                 </span>
@@ -162,64 +166,64 @@
             <!-- Middle Grid: Contact, Location, People, Special Needs -->
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4 text-xs">
               <!-- Contact -->
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64] font-bold">Resident Contact</p>
-                <p class="font-extrabold text-sm text-[#1c1b18] mt-0.5">{{ request.name }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500 dark:text-slate-400 font-semibold">Resident Contact</p>
+                <p class="font-bold text-sm text-slate-900 dark:text-slate-100 mt-0.5">{{ request.name }}</p>
                 <div class="mt-1">
                   @if (request.contactPhone) {
-                    <a [href]="'tel:' + request.contactPhone" class="font-bold text-[#b91c1c] hover:underline flex items-center gap-1">
-                      <span>📞</span> {{ request.contactPhone }}
+                    <a [href]="'tel:' + request.contactPhone" class="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                      {{ request.contactPhone }}
                     </a>
                   }
                   @if (request.alternateContact) {
-                    <p class="text-[#736d62] text-[11px] mt-0.5">Alt: {{ request.alternateContact }}</p>
+                    <p class="text-slate-500 text-[11px] mt-0.5">Alt: {{ request.alternateContact }}</p>
                   }
                 </div>
               </div>
 
               <!-- Location & Landmark -->
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64] font-bold">Location &amp; Access</p>
-                <p class="font-extrabold text-[#1c1b18] mt-0.5 text-xs">{{ request.location }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500 dark:text-slate-400 font-semibold">Location &amp; Access</p>
+                <p class="font-bold text-slate-900 dark:text-slate-100 mt-0.5 text-xs">{{ request.location }}</p>
                 @if (request.landmark) {
-                  <p class="text-[11px] text-[#555047] font-semibold mt-1">Landmark: {{ request.landmark }}</p>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1">Landmark: {{ request.landmark }}</p>
                 }
               </div>
 
               <!-- People & Aid Type -->
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64] font-bold">People &amp; Requirement</p>
-                <p class="font-extrabold text-sm text-[#1c1b18] mt-0.5">
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500 dark:text-slate-400 font-semibold">People &amp; Requirement</p>
+                <p class="font-bold text-sm text-slate-900 dark:text-slate-100 mt-0.5">
                   {{ request.peopleCount }} person(s)
                 </p>
-                <p class="text-[#b91c1c] font-bold mt-1 uppercase text-[11px]">
+                <p class="text-red-600 font-semibold mt-1 uppercase text-[11px]">
                   Aid: {{ request.helpType }}
                 </p>
               </div>
 
               <!-- Special Needs / Vulnerabilities -->
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64] font-bold">Vulnerabilities</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500 dark:text-slate-400 font-semibold">Vulnerabilities</p>
                 @if (request.specialNeeds) {
-                  <p class="text-[#991b1b] font-bold text-xs mt-1">
-                    ⚠️ {{ request.specialNeeds }}
+                  <p class="text-red-700 dark:text-red-400 font-semibold text-xs mt-1">
+                    {{ request.specialNeeds }}
                   </p>
                 } @else {
-                  <p class="text-[#756f64] mt-1 text-xs">Standard emergency</p>
+                  <p class="text-slate-500 mt-1 text-xs">Standard emergency</p>
                 }
               </div>
             </div>
 
             <!-- Disaster Details (if specified) -->
             @if (request.disasterDetails) {
-              <div class="bg-[#fff8e6] border border-[#fed7aa] p-3 rounded-xl text-xs text-[#9a3412] mb-4">
+              <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 p-3 rounded-xl text-xs text-amber-900 dark:text-amber-200 mb-4">
                 <strong>Specific Disaster Context:</strong> {{ request.disasterDetails }}
               </div>
             }
 
             <!-- Situation Description -->
-            <div class="bg-[#fcfbf9] border border-[#ece6db] p-3.5 rounded-xl text-xs text-[#444038] mb-4">
-              <span class="font-bold text-[#1c1b18]">Situation Report: </span>
+            <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl text-xs text-slate-700 dark:text-slate-300 mb-4">
+              <span class="font-bold text-slate-900 dark:text-slate-100">Situation Report: </span>
               {{ request.description }}
             </div>
 
@@ -230,9 +234,9 @@
                   <button
                     type="button"
                     (click)="openPhoto(request.photoData)"
-                    class="inline-flex items-center gap-2 rounded-xl border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-xs font-bold text-[#1e293b] hover:bg-[#e2e8f0] transition"
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                   >
-                    <span>📷</span>
+                    <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
                     <span>View Reference Photo</span>
                   </button>
                 }
@@ -245,17 +249,17 @@
                     type="button"
                     [disabled]="updatingHelpRequestId === request.id"
                     (click)="updateHelpRequestStatus(request, nextStatus)"
-                    class="rounded-xl bg-[#24221e] hover:bg-[#3d3a33] text-white px-5 py-2.5 text-xs font-bold transition shadow-sm disabled:opacity-50"
+                    class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 text-xs font-bold transition shadow-sm disabled:opacity-50"
                   >
                     @if (updatingHelpRequestId === request.id) {
                       Updating...
                     } @else {
-                      {{ getHelpActionText(request.status) }} →
+                      {{ getHelpActionText(request.status) }} &rarr;
                     }
                   </button>
                 } @else {
-                  <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-2 text-xs font-bold">
-                    ✓ Mission Completed &amp; Delivered
+                  <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3.5 py-2 text-xs font-bold">
+                    Mission Completed &amp; Delivered
                   </span>
                 }
               </div>
@@ -268,61 +272,63 @@
 
     <!-- Section 2: CAMP SUPPLY REQUESTS -->
     <section>
-      <div class="flex items-center justify-between mb-4 border-b border-[#e2ddd4] pb-3">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
         <div>
-          <h2 class="text-xl sm:text-2xl font-serif font-bold text-[#1c1b18] flex items-center gap-2">
-            <span>📦</span> Relief Camp Logistics &amp; Supply Orders
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Relief Camp Logistics &amp; Supply Orders
           </h2>
-          <p class="text-xs text-[#6e685c] mt-0.5">Bulk food, water, medical and bedding requirements submitted by camp managers.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Bulk food, water, medical and bedding requirements submitted by camp managers.</p>
         </div>
-        <span class="text-xs font-bold text-[#5c564c] bg-[#ede7dc] px-3 py-1 rounded-full">
+        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
           {{ filteredRequests.length }} requests
         </span>
       </div>
 
       @if (filteredRequests.length === 0) {
-        <div class="bg-white rounded-2xl border border-[#e4ded4] p-8 text-center">
-          <span class="text-4xl">📦</span>
-          <p class="text-sm font-bold text-[#3c3933] mt-2">No camp supply requests found.</p>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center text-slate-500">
+          <p class="text-sm font-semibold mt-2">No camp supply requests found.</p>
         </div>
       }
 
       <div class="space-y-4">
         @for (request of filteredRequests; track request.id) {
-          <div class="bg-white rounded-2xl border border-[#e4ded4] p-5 sm:p-6 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#f0ece3] pb-3 mb-4">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
               <div class="flex items-center gap-3">
-                <span class="font-extrabold text-sm text-[#1c1b18]">Supply Order #{{ request.id }}</span>
-                <span class="text-xs font-bold bg-[#f5f2eb] px-2 py-0.5 rounded border border-[#ded8cb]">Camp: {{ request.campId }}</span>
+                <span class="font-bold text-sm text-slate-900 dark:text-slate-100">Supply Order #{{ request.id }}</span>
+                <span class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">Camp: {{ request.campId }}</span>
                 <span [class]="getPriorityClasses(request.priority)">{{ request.priority }}</span>
               </div>
               <div class="text-xs">
-                <span class="text-[#736d62]">Status:</span>
+                <span class="text-slate-500">Status:</span>
                 <span [class]="getStatusClasses(request.status)">{{ request.status }}</span>
               </div>
             </div>
 
             <!-- Resource Quantities Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4 text-xs">
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64]">People Affected</p>
-                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.peopleAffected }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500">People Affected</p>
+                <p class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">{{ request.peopleAffected }}</p>
               </div>
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64]">💧 Water (L)</p>
-                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.waterQuantity }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500">Water (L)</p>
+                <p class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">{{ request.waterQuantity }}</p>
               </div>
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64]">🍲 Food Packs</p>
-                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.foodQuantity }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500">Food Packs</p>
+                <p class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">{{ request.foodQuantity }}</p>
               </div>
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64]">💊 Med Kits</p>
-                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.medicineQuantity }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500">Medical Kits</p>
+                <p class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">{{ request.medicineQuantity }}</p>
               </div>
-              <div class="bg-[#faf8f4] p-3 rounded-xl border border-[#ede7dc]">
-                <p class="text-[#756f64]">🛌 Blankets</p>
-                <p class="text-lg font-bold text-[#1c1b18] mt-0.5">{{ request.blanketQuantity }}</p>
+              <div class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                <p class="text-slate-500">Blankets</p>
+                <p class="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5">{{ request.blanketQuantity }}</p>
               </div>
             </div>
 
@@ -333,7 +339,7 @@
                   type="button"
                   [disabled]="updatingRequestId === request.id"
                   (click)="updateRequestStatus(request, nextStatus)"
-                  class="rounded-xl bg-[#24221e] hover:bg-[#3d3a33] text-white px-5 py-2 text-xs font-bold transition disabled:opacity-50"
+                  class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-xs font-bold transition disabled:opacity-50"
                 >
                   @if (updatingRequestId === request.id) {
                     Updating...
@@ -344,8 +350,8 @@
                   }
                 </button>
               } @else {
-                <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 text-xs font-bold">
-                  ✓ Supplies Delivered to Camp
+                <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3.5 py-1.5 text-xs font-bold">
+                  Supplies Delivered to Camp
                 </span>
               }
             </div>
@@ -355,4 +361,8 @@
     </section>
 
   </main>
+
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500">
+    &copy; 2026 AidLinkX. Developed by Naiyar Hasnain. All rights reserved.
+  </footer>
 </div>

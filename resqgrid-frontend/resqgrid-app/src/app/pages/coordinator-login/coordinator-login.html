@@ -1,12 +1,14 @@
-<div class="min-h-screen bg-[#f8f6f1] text-[#242320]">
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
+  
   <!-- Header -->
-  <header class="border-b border-[#e2ddd4] bg-[#fffdf8]/95 sticky top-0 z-40 backdrop-blur">
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-40 backdrop-blur">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
       <a routerLink="/user" class="flex items-center gap-3" aria-label="Return to AidLinkX Resident Desk">
-        <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-10 w-auto" />
+        <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 sm:h-10 w-auto" />
       </a>
-      <a routerLink="/user" class="text-xs sm:text-sm font-bold text-[#575147] transition hover:text-[#1c1b18]">
-        ← Resident Help Desk
+      <a routerLink="/user" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        <span>Resident Help Desk</span>
       </a>
     </div>
   </header>
@@ -15,171 +17,157 @@
 
     <!-- Left Overview & Explanation -->
     <section class="max-w-xl">
-      <span class="inline-flex items-center gap-2 rounded-full border border-[#ded8cb] bg-[#fbf9f4] px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#6b655a]">
-        <span class="h-2 w-2 rounded-full bg-[#ef4444]"></span> Official Response Team Portal
+      <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/40 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+        <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span> Official Response Team Portal
       </span>
-      <h1 class="mt-4 font-serif text-4xl leading-[1.08] tracking-tight text-[#1c1b18] sm:text-5xl">
+      <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 leading-[1.1]">
         Every second saved <br class="hidden sm:block" />saves a life.
       </h1>
-      <p class="mt-4 text-base leading-relaxed text-[#635d52]">
-        AidLinkX unifies distress signals from residents, field boat patrols, relief camps, and air-drop coordinators into one coordinated command grid.
+      <p class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">
+        AidLinkX unifies distress signals from residents, field boat patrols, relief camps, and air-drop coordinators into one coordinated emergency command grid.
       </p>
 
       <!-- 1-Click Quick Demo Access Card (Designed for Hackathon Judges) -->
-      <div class="mt-8 rounded-2xl border-2 border-emerald-300 bg-[#f0fdf4] p-5 shadow-sm">
+      <div class="mt-8 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/30 p-5 shadow-sm">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-            <span>✨</span> 1-Click Hackathon Demo Access
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+            <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            1-Click Demo Coordinator Access
           </span>
-          <span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+          <span class="text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">
             Pre-Authenticated
           </span>
         </div>
-        <p class="text-xs text-emerald-900 mb-3">
+        <p class="text-xs text-emerald-900 dark:text-emerald-200 mb-3 leading-relaxed">
           Instant login without typing. Click any coordination role to authenticate against the live Spring Boot + RDS backend:
         </p>
 
-        <div class="grid gap-2 sm:grid-cols-3">
+        <div class="grid gap-2.5 sm:grid-cols-3">
           <button
             type="button"
             (click)="quickDemoLogin('DISTRICT')"
-            class="rounded-xl border border-emerald-300 bg-white p-2.5 text-left transition hover:border-emerald-600 hover:shadow-md"
+            class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-800 p-3 text-left transition hover:border-emerald-500 hover:shadow-sm"
           >
-            <span class="block text-xs font-extrabold text-[#1c1b18]">District Desk</span>
-            <span class="text-[10px] text-emerald-700 block truncate">district@aidlinkx.demo</span>
+            <span class="block text-xs font-bold text-slate-900 dark:text-slate-100">District Desk</span>
+            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 block truncate mt-0.5">district&#64;aidlinkx.demo</span>
           </button>
 
           <button
             type="button"
             (click)="quickDemoLogin('NATIONAL')"
-            class="rounded-xl border border-emerald-300 bg-white p-2.5 text-left transition hover:border-emerald-600 hover:shadow-md"
+            class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-800 p-3 text-left transition hover:border-emerald-500 hover:shadow-sm"
           >
-            <span class="block text-xs font-extrabold text-[#1c1b18]">National HQ</span>
-            <span class="text-[10px] text-emerald-700 block truncate">national@aidlinkx.demo</span>
+            <span class="block text-xs font-bold text-slate-900 dark:text-slate-100">National HQ</span>
+            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 block truncate mt-0.5">national&#64;aidlinkx.demo</span>
           </button>
 
           <button
             type="button"
             (click)="quickDemoLogin('FIELD')"
-            class="rounded-xl border border-emerald-300 bg-white p-2.5 text-left transition hover:border-emerald-600 hover:shadow-md"
+            class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-800 p-3 text-left transition hover:border-emerald-500 hover:shadow-sm"
           >
-            <span class="block text-xs font-extrabold text-[#1c1b18]">Field Responders</span>
-            <span class="text-[10px] text-emerald-700 block truncate">field@aidlinkx.demo</span>
+            <span class="block text-xs font-bold text-slate-900 dark:text-slate-100">Field Unit</span>
+            <span class="text-[10px] text-emerald-700 dark:text-emerald-400 block truncate mt-0.5">field&#64;aidlinkx.demo</span>
           </button>
         </div>
       </div>
 
-      <div class="mt-8 grid gap-4 sm:grid-cols-2">
-        <div class="rounded-2xl border border-[#ded8cb] bg-[#fbf9f4] p-4">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#24221e] text-xs font-bold text-white mb-2">01</div>
-          <h2 class="text-xs font-bold text-[#1c1b18]">Critical Triage</h2>
-          <p class="mt-1 text-xs text-[#6e685c]">Automatically categorizes requests by medical risk and vulnerable members.</p>
+      <div class="mt-6 flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+        <div class="flex items-center gap-1.5">
+          <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          <span>Offline Fallback Ready</span>
         </div>
-        <div class="rounded-2xl border border-[#ded8cb] bg-[#fbf9f4] p-4">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#24221e] text-xs font-bold text-white mb-2">02</div>
-          <h2 class="text-xs font-bold text-[#1c1b18]">End-to-End Tracking</h2>
-          <p class="mt-1 text-xs text-[#6e685c]">Transition requests from Pending → Accepted → Dispatched → Delivered.</p>
+        <div class="flex items-center gap-1.5">
+          <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          <span>End-to-End Encrypted Sessions</span>
         </div>
       </div>
     </section>
 
-    <!-- Right Login Card -->
-    <section class="rounded-[2.25rem] border border-[#e4ded4] bg-[#fffdf9] p-7 shadow-[0_20px_65px_rgba(40,36,29,0.08)] sm:p-9">
+    <!-- Right Login Form -->
+    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
       <div class="mb-6">
-        <span class="text-xs font-bold uppercase tracking-[0.16em] text-[#7a7366]">Coordinator Workspace</span>
-        <h2 class="mt-1 font-serif text-3xl font-bold tracking-tight text-[#1c1b18]">
-          Sign In to Portal
-        </h2>
-        <p class="mt-1 text-xs text-[#6b655a]">
-          Select coordination responsibility and sign in to access live requests.
+        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Coordinator Authentication</h2>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          Authorized personnel sign-in for disaster operations management.
         </p>
       </div>
 
       @if (errorMessage) {
-        <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
+        <div class="mb-5 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-3.5 text-xs text-red-700 dark:text-red-300">
           {{ errorMessage }}
         </div>
       }
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="space-y-4">
-
-        <!-- Coordination Level Selector -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        
         <div>
-          <label class="block text-xs font-bold text-[#3c3933] mb-2">Coordination Level</label>
-          <div class="space-y-2">
-            @for (level of levels; track level.value) {
-              <button
-                type="button"
-                (click)="selectLevel(level.value)"
-                [class]="selectedLevel === level.value ? 'w-full rounded-xl border-2 border-[#24221e] bg-[#f3efe7] p-3 text-left transition' : 'w-full rounded-xl border border-[#d8d1c5] bg-white p-3 text-left transition hover:border-[#8f887b]'"
-              >
-                <div class="flex items-center gap-3">
-                  <span [class]="selectedLevel === level.value ? 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#24221e] text-xs font-bold text-white' : 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#ede7dc] text-xs font-bold text-[#575247]'">
-                    {{ level.initials }}
-                  </span>
-                  <div class="min-w-0 flex-1">
-                    <span class="block text-xs font-bold text-[#24221e]">{{ level.title }}</span>
-                    <span class="block text-[11px] text-[#736d62] truncate">{{ level.detail }}</span>
-                  </div>
-                  @if (selectedLevel === level.value) {
-                    <span class="text-sm font-bold text-[#24221e]">✓</span>
-                  }
-                </div>
-              </button>
+          <label for="level" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+            Command Jurisdiction
+          </label>
+          <select
+            id="level"
+            formControlName="level"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+          >
+            @for (item of levels; track item.value) {
+              <option [value]="item.value">{{ item.title }}</option>
             }
-          </div>
+          </select>
         </div>
 
-        <!-- Identifier -->
         <div>
-          <label for="coordId" class="block text-xs font-bold text-[#3c3933] mb-1">Coordinator Email / ID</label>
+          <label for="identifier" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+            Authorized Email / ID
+          </label>
           <input
-            id="coordId"
+            id="identifier"
             type="text"
             formControlName="identifier"
-            autocomplete="username"
-            placeholder="e.g. district@aidlinkx.demo"
-            class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+            placeholder="district&#64;aidlinkx.demo"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
           />
         </div>
 
-        <!-- Password -->
         <div>
-          <div class="flex items-center justify-between mb-1">
-            <label for="coordPass" class="block text-xs font-bold text-[#3c3933]">Password</label>
-            <button type="button" class="text-xs font-semibold text-[#666055] hover:text-[#1c1b18]" (click)="showPassword = !showPassword">
-              {{ showPassword ? 'Hide' : 'Show' }}
-            </button>
-          </div>
+          <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+            Security Password
+          </label>
           <input
-            id="coordPass"
-            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            type="password"
             formControlName="password"
-            autocomplete="current-password"
-            placeholder="Enter password"
-            class="w-full rounded-xl border border-[#d8d1c5] bg-white px-3.5 py-2.5 text-sm text-[#24221e] outline-none transition focus:border-[#423e37] focus:ring-4 focus:ring-[#e8e4db]"
+            placeholder="AidLinkX&#64;2026"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
           />
         </div>
 
-        <!-- Submit Button -->
         <button
           type="submit"
           [disabled]="isLoading"
-          class="w-full rounded-xl bg-[#24221e] py-3.5 text-sm font-bold text-white transition hover:bg-[#3d3a33] focus:outline-none focus:ring-4 focus:ring-[#d8d3c9] disabled:opacity-60 flex items-center justify-center gap-2 mt-4"
+          class="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 shadow-sm hover:shadow transition active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-sm"
         >
           @if (isLoading) {
-            <span>Authenticating with AidLinkX Gateway...</span>
+            <span>Authenticating Credentials...</span>
           } @else {
-            <span>Enter Relief Coordinator Desk</span>
-            <span aria-hidden="true">→</span>
+            <span>Authenticate Command Session</span>
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           }
         </button>
+
       </form>
 
-      <div class="mt-5 text-center text-xs text-[#787165] border-t border-[#ede7dc] pt-4">
-        Default Demo Password: <code class="font-mono bg-[#eee9df] px-1.5 py-0.5 rounded text-[#24221e]">AidLinkX@2026</code>
+      <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+        <a routerLink="/user" class="hover:text-slate-800 dark:hover:text-slate-200">Return to Resident Desk</a>
+        <a routerLink="/camp-worker" class="hover:text-slate-800 dark:hover:text-slate-200">Camp Relief Portal</a>
       </div>
     </section>
 
   </main>
+
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500">
+    &copy; 2026 AidLinkX. Developed by Naiyar Hasnain. All rights reserved.
+  </footer>
 </div>
