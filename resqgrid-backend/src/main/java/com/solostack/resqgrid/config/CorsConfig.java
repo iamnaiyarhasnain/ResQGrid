@@ -17,14 +17,12 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-
-                        // Allow the live Angular application
-                        .allowedOrigins(
+                        .allowedOriginPatterns(
                                 "https://main.d1vtxuu4ic8mpk.amplifyapp.com",
-                                "http://localhost:4200"
+                                "https://*.amplifyapp.com",
+                                "http://localhost:*",
+                                "http://127.0.0.1:*"
                         )
-
-                        // HTTP methods used by our application
                         .allowedMethods(
                                 "GET",
                                 "POST",
@@ -33,12 +31,10 @@ public class CorsConfig {
                                 "DELETE",
                                 "OPTIONS"
                         )
-
-                        // Headers sent by Angular/browser
                         .allowedHeaders("*")
-
-                        // Allow browser credentials/authorization handling
-                        .allowCredentials(true);
+                        .exposedHeaders("*")
+                        .allowCredentials(true)
+                        .maxAge(3600);
             }
         };
     }

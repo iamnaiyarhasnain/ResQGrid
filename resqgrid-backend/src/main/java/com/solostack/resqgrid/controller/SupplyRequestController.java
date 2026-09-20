@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 
-@CrossOrigin(origins = "*")
 // Tells Spring that this class handles REST API requests
 @RestController
 // Base URL for all supply-request APIs
