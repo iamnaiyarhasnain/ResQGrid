@@ -1,8 +1,35 @@
 {
-  "name": "resqgrid-app",
+  "name": "aidlinkx-app",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
-    "build": "node -e \"const fs=require('fs'),cp=require('child_process'),path=require('path'); const target=path.resolve(__dirname,'../../aidlinkx-frontend/aidlinkx-app'); cp.execSync('npm run build',{cwd:target,stdio:'inherit'}); const src=path.join(target,'dist/aidlinkx-app/browser'); const dest1=path.resolve(__dirname,'dist/resqgrid-app'); const dest2=path.resolve(__dirname,'dist/aidlinkx-app/browser'); fs.mkdirSync(dest1,{recursive:true}); fs.cpSync(src,dest1,{recursive:true}); fs.mkdirSync(dest2,{recursive:true}); fs.cpSync(src,dest2,{recursive:true});\""
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build && node -e \"const fs=require('fs'),path=require('path'); const src=path.resolve('dist/aidlinkx-app/browser'); const d1=path.resolve('dist/resqgrid-app'); const d2=path.resolve('dist/resqgrid-app/browser'); fs.mkdirSync(d1,{recursive:true}); fs.cpSync(src,d1,{recursive:true}); fs.mkdirSync(d2,{recursive:true}); fs.cpSync(src,d2,{recursive:true});\"",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "npm@11.17.0",
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.8",
+    "@angular/cli": "^22.1.8",
+    "@angular/compiler-cli": "^22.1.0",
+    "@tailwindcss/postcss": "^4.1.12",
+    "jsdom": "^28.0.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
   }
 }
