@@ -5,6 +5,7 @@ import { CoordinatorDashboard } from './pages/coordinator-dashboard/coordinator-
 import { CoordinatorLogin } from './pages/coordinator-login/coordinator-login';
 import { UserDashboard } from './pages/user-dashboard/user-dashboard';
 import { FeedbackPage } from './pages/feedback/feedback';
+import { coordinatorGuard } from './guards/coordinator.guard';
 
 export const routes: Routes = [
   // Resident/User Emergency Help Desk (Landing Page)
@@ -19,10 +20,11 @@ export const routes: Routes = [
     component: FeedbackPage
   },
 
-  // Coordinator Dashboard
+  // Coordinator Dashboard (Protected via Coordinator Security Guard)
   {
     path: 'coordinator',
-    component: CoordinatorDashboard
+    component: CoordinatorDashboard,
+    canActivate: [coordinatorGuard]
   },
 
   // Coordinator Sign-in

@@ -87,22 +87,58 @@
     </section>
 
     <!-- Right Login Form -->
-    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
+    <section class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-sm">
       <div class="mb-6">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Coordinator Authentication</h2>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+            RBAC + Clearance Key
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+            PBKDF2-SHA256
+          </span>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Coordinator Security Sign-In</h2>
         <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          Authorized personnel sign-in for disaster operations management.
+          Cryptographically authenticated session access for emergency dispatch commanders.
         </p>
       </div>
 
+      <!-- Access Guard Notice -->
+      @if (accessNotice) {
+        <div class="mb-5 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-3.5 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2.5">
+          <svg class="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{{ accessNotice }}</span>
+        </div>
+      }
+
+      <!-- Error Message -->
       @if (errorMessage) {
-        <div class="mb-5 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-3.5 text-xs text-red-700 dark:text-red-300">
-          {{ errorMessage }}
+        <div class="mb-5 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-3.5 text-xs text-red-700 dark:text-red-300 flex items-start gap-2.5">
+          <svg class="h-4 w-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <!-- Cooldown Lockout Warning -->
+      @if (cooldownSeconds > 0) {
+        <div class="mb-5 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 p-3.5 text-xs text-rose-800 dark:text-rose-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-rose-600 animate-ping"></span>
+            <span><strong>Brute-Force Guard:</strong> Cooldown active due to failed attempts.</span>
+          </div>
+          <span class="font-mono font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-900/60 px-2 py-0.5 rounded">
+            {{ cooldownSeconds }}s
+          </span>
         </div>
       }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
         
+        <!-- Command Jurisdiction -->
         <div>
           <label for="level" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
             Command Jurisdiction
@@ -110,6 +146,7 @@
           <select
             id="level"
             formControlName="level"
+            (change)="selectLevel(loginForm.get('level')?.value)"
             class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
           >
             @for (item of levels; track item.value) {
@@ -118,48 +155,122 @@
           </select>
         </div>
 
+        <!-- Authorized ID -->
         <div>
           <label for="identifier" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-            Authorized Email / ID
+            Authorized Email / Officer ID
           </label>
           <input
             id="identifier"
             type="text"
             formControlName="identifier"
-            placeholder="district&#64;aidlinkx.demo"
+            placeholder="district@aidlinkx.demo"
             class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
           />
         </div>
 
+        <!-- Password with Strength Meter & Toggle -->
         <div>
-          <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-            Security Password
-          </label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="password" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              Security Password
+            </label>
+            <span class="text-[11px] font-semibold {{ passwordStrength.color }}">
+              {{ passwordStrength.label }}
+            </span>
+          </div>
+
+          <div class="relative">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="AidLinkX@2026"
+              class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 pr-10 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+            />
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+              aria-label="Toggle password visibility"
+            >
+              @if (showPassword) {
+                <!-- Eye Slash SVG -->
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+              } @else {
+                <!-- Eye SVG -->
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              }
+            </button>
+          </div>
+
+          <!-- Password Strength Bar -->
+          <div class="mt-2 flex h-1.5 w-full gap-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+            <div class="h-full transition-all duration-300 rounded-full {{ passwordStrength.score >= 1 ? (passwordStrength.score >= 4 ? 'bg-emerald-500 w-1/4' : (passwordStrength.score >= 3 ? 'bg-amber-500 w-1/4' : 'bg-red-500 w-1/4')) : 'bg-transparent w-0' }}"></div>
+            <div class="h-full transition-all duration-300 rounded-full {{ passwordStrength.score >= 2 ? (passwordStrength.score >= 4 ? 'bg-emerald-500 w-1/4' : (passwordStrength.score >= 3 ? 'bg-amber-500 w-1/4' : 'bg-red-500 w-1/4')) : 'bg-transparent w-0' }}"></div>
+            <div class="h-full transition-all duration-300 rounded-full {{ passwordStrength.score >= 3 ? (passwordStrength.score >= 4 ? 'bg-emerald-500 w-1/4' : 'bg-amber-500 w-1/4') : 'bg-transparent w-0' }}"></div>
+            <div class="h-full transition-all duration-300 rounded-full {{ passwordStrength.score >= 4 ? 'bg-emerald-500 w-1/4' : 'bg-transparent w-0' }}"></div>
+          </div>
+        </div>
+
+        <!-- Security Clearance Key / 2FA Passcode -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="securityKey" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <span>Security Clearance Passkey (2FA)</span>
+              <span class="text-[10px] text-blue-600 font-semibold">(Officer Badge)</span>
+            </label>
+            <span class="text-[11px] text-slate-400 font-mono">Demo: AIDLINK-SEC-2026</span>
+          </div>
           <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="AidLinkX&#64;2026"
-            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition"
+            id="securityKey"
+            type="text"
+            formControlName="securityKey"
+            placeholder="AIDLINK-SEC-2026"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none transition font-mono tracking-wide"
           />
         </div>
 
+        <!-- Submit Button -->
         <button
           type="submit"
-          [disabled]="isLoading"
+          [disabled]="isLoading || cooldownSeconds > 0"
           class="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 shadow-sm hover:shadow transition active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-sm"
         >
           @if (isLoading) {
-            <span>Authenticating Credentials...</span>
+            <span>Authenticating Command Session...</span>
+          } @else if (cooldownSeconds > 0) {
+            <span>Rate-Limit Cooldown ({{ cooldownSeconds }}s)...</span>
           } @else {
-            <span>Authenticate Command Session</span>
+            <span>Authenticate Secure Session</span>
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           }
         </button>
 
       </form>
 
-      <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+      <!-- Security Guarantees & Audit Note -->
+      <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 space-y-2 text-[11px] text-slate-500 dark:text-slate-400">
+        <div class="flex items-center gap-2">
+          <svg class="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>PBKDF2-HMAC-SHA256 password derivation with 120,000 rounds.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>Brute-force protection: accounts locked after 5 consecutive failed attempts.</span>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
         <a routerLink="/user" class="hover:text-slate-800 dark:hover:text-slate-200">Return to Resident Desk</a>
         <a routerLink="/camp-worker" class="hover:text-slate-800 dark:hover:text-slate-200">Camp Relief Portal</a>
       </div>

@@ -52,6 +52,14 @@ export class AuthService {
 
   get currentUser(): AuthUser | null { return this.session?.user ?? null; }
   get isSignedIn(): boolean { return this.session !== null; }
+  get isCoordinator(): boolean {
+    const role = this.currentUser?.role;
+    return role === 'FIELD_COORDINATOR' || role === 'DISTRICT_COORDINATOR' || role === 'NATIONAL_COORDINATOR';
+  }
+
+  hasRole(role: UserRole): boolean {
+    return this.currentUser?.role === role;
+  }
 
   get authOptions(): { headers: HttpHeaders } {
     const token = this.session?.token;
@@ -65,9 +73,9 @@ export class AuthService {
       .pipe(tap(response => this.saveSession(response)));
   }
 
-  login(identifier: string, password: string, requestedRole?: UserRole): Observable<AuthResponse> {
+  login(identifier: string, password: string, requestedRole?: UserRole, securityKey?: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authUrl}/login`, {
-      identifier, password, requestedRole
+      identifier, password, requestedRole, securityKey
     }).pipe(tap(response => this.saveSession(response)));
   }
 
