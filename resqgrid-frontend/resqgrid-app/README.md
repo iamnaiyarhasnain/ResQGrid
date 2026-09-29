@@ -1,6 +1,6 @@
-# AidLinkX — Humanitarian Disaster Relief & Emergency Coordination Network
+# ResQgrid — Humanitarian Disaster Relief & Emergency Coordination Network
 
-AidLinkX is an offline-first disaster response and relief coordination platform connecting affected residents, first responders, relief camp workers, and district/national coordinators.
+ResQgrid is an offline-first disaster response and relief coordination platform connecting affected residents, first responders, relief camp workers, and district/national coordinators.
 
 ## Deployment Architecture
 - **Frontend (Angular)**: Deployed on AWS Amplify.
@@ -11,7 +11,7 @@ AidLinkX is an offline-first disaster response and relief coordination platform 
 - **Optional Resident Authentication**: Residents can request help immediately with zero login required, or optionally register/sign-in via phone or email to track tickets.
 - **Comprehensive Disaster Triage**: Supports multiple disaster types (Flood, Earthquake, Cyclone, Landslide, Wildfire, Heatwave, Tsunami, Cloudburst, Industrial Hazard, Other with custom details) and special needs tracking (infants, elderly, pregnant, injured, medication).
 - **Non-Compulsory Reference Photo**: Victims and volunteers can attach photos of flood levels, road blocks, or roof locations to assist boat and aerial rescue.
-- **Emergency Dial Directory**: One-click hotline access to 112 (National Emergency), 108 (Ambulance), 101 (Fire & Rescue), 1070 (Disaster Authority), and 24/7 AidLinkX dispatch.
+- **Emergency Dial Directory**: One-click hotline access to 112 (National Emergency), 108 (Ambulance), 101 (Fire & Rescue), 1070 (Disaster Authority), and 24/7 ResQgrid dispatch.
 - **Feedback & Quality System**: Dedicated `/feedback` portal for community suggestions and operational rating.
 - **Coordinator Command Workspace**: Triage resident SOS calls and camp supply demands from Pending → Accepted → Dispatched → Delivered with 1-click hackathon demo credentials.
 
@@ -19,7 +19,7 @@ AidLinkX is an offline-first disaster response and relief coordination platform 
 
 ### Frontend
 ```bash
-cd aidlinkx-frontend/aidlinkx-app
+cd resqgrid-frontend/resqgrid-app
 npm install
 npm run build
 npm start
@@ -27,7 +27,7 @@ npm start
 
 ### Backend
 ```bash
-cd aidlinkx-backend
+cd resqgrid-backend
 mvn clean compile
 mvn test-compile
 ```

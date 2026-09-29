@@ -35,25 +35,37 @@ export interface DisasterZone {
   styleUrl: './user-dashboard.css'
 })
 export class UserDashboard implements OnInit {
+
   helpRequestForm: FormGroup;
   authForm: FormGroup;
+
   successMessage = '';
   errorMessage = '';
   authErrorMessage = '';
+
   isSubmitting = false;
   isAuthSubmitting = false;
+
   requestId: number | null = null;
   lastClientRequestId = '';
+
+  // Current network state.
   isOnline = navigator.onLine;
+
   queuedRequestCount = 0;
   queuedItems: QueuedHelpRequest[] = [];
+
   showAuthPanel = false;
   showTermsModal = false;
   showPrivacyModal = false;
+
   authMode: 'login' | 'register' = 'register';
+
   currentUser: AuthUser | null = null;
+
   photoData = '';
   photoName = '';
+
   copiedNumber = '';
   isDetectingLocation = false;
 
@@ -110,7 +122,7 @@ export class UserDashboard implements OnInit {
       iconType: 'disaster'
     },
     {
-      name: 'AidLinkX 24/7 Rapid Dispatch',
+      name: 'ResQgrid 24/7 Rapid Dispatch',
       number: '+91 800 233 5465',
       category: 'Humanitarian Operations Desk',
       badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900',
@@ -172,64 +184,168 @@ export class UserDashboard implements OnInit {
     private authService: AuthService,
     public themeService: ThemeService
   ) {
+
     this.currentUser = this.authService.currentUser;
 
     this.helpRequestForm = this.formBuilder.group({
-      name: [this.currentUser?.name || '', [Validators.required, Validators.minLength(2)]],
-      contactPhone: [this.currentUser?.phone || '', [Validators.required, Validators.pattern(/^[0-9+ -]{7,16}$/)]],
-      alternateContact: ['', [Validators.pattern(/^[0-9+ -]{7,16}$/)]],
-      location: ['', [Validators.required, Validators.minLength(3)]],
+      name: [
+        this.currentUser?.name || '',
+        [Validators.required, Validators.minLength(2)]
+      ],
+
+      contactPhone: [
+        this.currentUser?.phone || '',
+        [Validators.required, Validators.pattern(/^[0-9+ -]{7,16}$/)]
+      ],
+
+      alternateContact: [
+        '',
+        [Validators.pattern(/^[0-9+ -]{7,16}$/)]
+      ],
+
+      location: [
+        '',
+        [Validators.required, Validators.minLength(3)]
+      ],
+
       landmark: [''],
-      peopleCount: [1, [Validators.required, Validators.min(1), Validators.max(5000)]],
-      priority: ['HIGH', Validators.required],
-      disasterType: ['Flood / Inundation', Validators.required],
+
+      peopleCount: [
+        1,
+        [Validators.required, Validators.min(1), Validators.max(5000)]
+      ],
+
+      priority: [
+        'HIGH',
+        Validators.required
+      ],
+
+      disasterType: [
+        'Flood / Inundation',
+        Validators.required
+      ],
+
       disasterTypeOther: [''],
+
       details: ['']
     });
 
     this.authForm = this.formBuilder.group({
       name: [''],
-      identifier: ['', [Validators.required]],
-      phone: ['', [Validators.pattern(/^[0-9+ -]{7,16}$/)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+
+      identifier: [
+        '',
+        [Validators.required]
+      ],
+
+      phone: [
+        '',
+        [Validators.pattern(/^[0-9+ -]{7,16}$/)]
+      ],
+
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6)]
+      ]
     });
   }
 
   ngOnInit(): void {
-    this.queuedRequestCount = this.helpRequestService.getQueuedRequestCount();
-    this.queuedItems = this.helpRequestService.getQueuedRequests();
 
+    // Load currently queued offline requests.
+    this.queuedRequestCount =
+      this.helpRequestService.getQueuedRequestCount();
+
+    this.queuedItems =
+      this.helpRequestService.getQueuedRequests();
+
+    // Keep the UI queue count synchronized.
     this.helpRequestService.queuedRequestCount$.subscribe((count) => {
+
       this.queuedRequestCount = count;
-      this.queuedItems = this.helpRequestService.getQueuedRequests();
+
+      this.queuedItems =
+        this.helpRequestService.getQueuedRequests();
     });
 
+    // Show a success message after queued requests are synchronized.
     this.helpRequestService.syncCompleted$.subscribe(({ syncedCount }) => {
+
       if (syncedCount > 0) {
-        this.successMessage = `Successfully synced ${syncedCount} queued emergency request(s) to dispatch headquarters.`;
-        setTimeout(() => (this.successMessage = ''), 7000);
+
+        this.successMessage =
+          `Successfully synced ${syncedCount} queued emergency request(s) to dispatch headquarters.`;
+
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 7000);
       }
     });
 
-    this.currentUser = this.authService.currentUser;
+    this.currentUser =
+      this.authService.currentUser;
+
     if (this.currentUser) {
+
       if (!this.helpRequestForm.get('name')?.value) {
-        this.helpRequestForm.patchValue({ name: this.currentUser.name });
+
+        this.helpRequestForm.patchValue({
+          name: this.currentUser.name
+        });
       }
-      if (!this.helpRequestForm.get('contactPhone')?.value && this.currentUser.phone) {
-        this.helpRequestForm.patchValue({ contactPhone: this.currentUser.phone });
+
+      if (
+        !this.helpRequestForm.get('contactPhone')?.value &&
+        this.currentUser.phone
+      ) {
+
+        this.helpRequestForm.patchValue({
+          contactPhone: this.currentUser.phone
+        });
       }
+    }
+
+    // Check the network state when the dashboard starts.
+    this.isOnline = navigator.onLine;
+
+    // If the page starts while online,
+    // try to synchronize any previously queued requests.
+    if (this.isOnline) {
+      this.helpRequestService.flushQueuedRequests();
     }
   }
 
+  /**
+   * Browser detected that the internet connection is back.
+   *
+   * We immediately update the UI and try to synchronize
+   * requests that were stored while offline.
+   */
   @HostListener('window:online')
   onNetworkOnline(): void {
+
     this.isOnline = true;
+
+    this.errorMessage = '';
+
+    // Automatically synchronize queued requests.
+    this.helpRequestService.flushQueuedRequests();
   }
 
+  /**
+   * Browser detected that the internet connection was lost.
+   */
   @HostListener('window:offline')
   onNetworkOffline(): void {
+
     this.isOnline = false;
+
+    // If a form submission is currently waiting for a response,
+    // stop showing the user an endless loading state.
+    this.isSubmitting = false;
+
+    this.successMessage =
+      'Offline: Your emergency request will be stored locally and synchronized when the connection returns.';
   }
 
   toggleTheme(): void {
@@ -237,247 +353,573 @@ export class UserDashboard implements OnInit {
   }
 
   selectDisasterZone(zone: DisasterZone): void {
+
     this.helpRequestForm.patchValue({
       disasterType: zone.disasterType,
       location: zone.region,
       landmark: zone.title
     });
-    // Scroll smoothly to form
-    const formElement = document.getElementById('aid-request-form');
+
+    // Scroll smoothly to the emergency request form.
+    const formElement =
+      document.getElementById('aid-request-form');
+
     if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth' });
+
+      formElement.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   }
 
   detectGPS(): void {
+
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+
+      alert(
+        'Geolocation is not supported by your browser.'
+      );
+
       return;
     }
+
     this.isDetectingLocation = true;
+
     navigator.geolocation.getCurrentPosition(
+
       (position) => {
+
         this.isDetectingLocation = false;
-        const lat = position.coords.latitude.toFixed(5);
-        const lng = position.coords.longitude.toFixed(5);
-        const existingLocation = this.helpRequestForm.get('location')?.value;
-        const coordsText = `GPS: ${lat}, ${lng}`;
+
+        const lat =
+          position.coords.latitude.toFixed(5);
+
+        const lng =
+          position.coords.longitude.toFixed(5);
+
+        const existingLocation =
+          this.helpRequestForm.get('location')?.value;
+
+        const coordsText =
+          `GPS: ${lat}, ${lng}`;
+
         this.helpRequestForm.patchValue({
-          location: existingLocation ? `${existingLocation} (${coordsText})` : coordsText
+          location: existingLocation
+            ? `${existingLocation} (${coordsText})`
+            : coordsText
         });
       },
+
       (err) => {
+
         this.isDetectingLocation = false;
-        console.warn('Geolocation error:', err);
-        alert('Could not retrieve GPS coordinates. Please type your location manually.');
+
+        console.warn(
+          'Geolocation error:',
+          err
+        );
+
+        alert(
+          'Could not retrieve GPS coordinates. Please type your location manually.'
+        );
       },
-      { timeout: 10000, enableHighAccuracy: true }
+
+      {
+        timeout: 10000,
+        enableHighAccuracy: true
+      }
     );
   }
 
   toggleSpecialNeed(id: string): void {
+
     if (this.selectedSpecialNeeds.includes(id)) {
-      this.selectedSpecialNeeds = this.selectedSpecialNeeds.filter((item) => item !== id);
+
+      this.selectedSpecialNeeds =
+        this.selectedSpecialNeeds.filter(
+          (item) => item !== id
+        );
+
     } else {
+
       this.selectedSpecialNeeds.push(id);
     }
   }
 
   isSpecialNeedSelected(id: string): boolean {
+
     return this.selectedSpecialNeeds.includes(id);
   }
 
   onPhotoSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
+
+    const input =
+      event.target as HTMLInputElement;
+
     if (input.files && input.files[0]) {
-      const file = input.files[0];
+
+      const file =
+        input.files[0];
+
       if (file.size > 5 * 1024 * 1024) {
-        alert('Photo must be less than 5MB.');
+
+        alert(
+          'Photo must be less than 5MB.'
+        );
+
         return;
       }
-      this.photoName = file.name;
-      const reader = new FileReader();
+
+      this.photoName =
+        file.name;
+
+      const reader =
+        new FileReader();
+
       reader.onload = () => {
-        this.photoData = reader.result as string;
+
+        this.photoData =
+          reader.result as string;
       };
+
       reader.readAsDataURL(file);
     }
   }
 
   removePhoto(): void {
+
     this.photoData = '';
     this.photoName = '';
   }
 
   copyEmergencyNumber(number: string): void {
-    navigator.clipboard.writeText(number).then(() => {
-      this.copiedNumber = number;
-      setTimeout(() => (this.copiedNumber = ''), 2500);
-    });
+
+    navigator.clipboard
+      .writeText(number)
+      .then(() => {
+
+        this.copiedNumber = number;
+
+        setTimeout(() => {
+          this.copiedNumber = '';
+        }, 2500);
+      });
   }
 
+  /**
+   * Manually synchronize queued requests.
+   */
   triggerManualSync(): void {
+
+    if (!navigator.onLine || !this.isOnline) {
+
+      this.successMessage =
+        'You are currently offline. Your requests will sync automatically when the connection returns.';
+
+      return;
+    }
+
     this.helpRequestService.flushQueuedRequests();
   }
 
   openAuthPanel(mode: 'login' | 'register'): void {
+
     this.authMode = mode;
     this.authErrorMessage = '';
     this.showAuthPanel = true;
   }
 
   closeAuthPanel(): void {
+
     this.showAuthPanel = false;
   }
 
   switchAuthMode(mode: 'login' | 'register'): void {
+
     this.authMode = mode;
     this.authErrorMessage = '';
   }
 
   submitAuth(): void {
+
     this.authErrorMessage = '';
+
     if (this.authMode === 'login') {
-      const { identifier, password } = this.authForm.value;
+
+      const {
+        identifier,
+        password
+      } = this.authForm.value;
+
       if (!identifier || !password) {
-        this.authErrorMessage = 'Please enter your email/phone and password.';
+
+        this.authErrorMessage =
+          'Please enter your email/phone and password.';
+
         return;
       }
+
       this.isAuthSubmitting = true;
-      this.authService.login(identifier.trim(), password).subscribe({
-        next: (res) => {
-          this.isAuthSubmitting = false;
-          this.currentUser = res.user;
-          this.showAuthPanel = false;
-        },
-        error: (err) => {
-          this.isAuthSubmitting = false;
-          this.authErrorMessage = err?.error?.message || 'Invalid credentials. Please try again.';
-        }
-      });
+
+      this.authService
+        .login(identifier, password)
+        .subscribe({
+
+          next: (res) => {
+
+            this.isAuthSubmitting = false;
+
+            this.currentUser =
+              res.user;
+
+            this.showAuthPanel = false;
+          },
+
+          error: (err) => {
+
+            this.isAuthSubmitting = false;
+
+            this.authErrorMessage =
+              err?.error?.message ||
+              'Invalid credentials. Please try again.';
+          }
+        });
+
     } else {
-      const { name, identifier, phone, password } = this.authForm.value;
+
+      const {
+        name,
+        identifier,
+        phone,
+        password
+      } = this.authForm.value;
+
       if (!identifier || !password) {
-        this.authErrorMessage = 'Please fill in required fields.';
+
+        this.authErrorMessage =
+          'Please fill in required fields.';
+
         return;
       }
+
       this.isAuthSubmitting = true;
-      const isEmail = identifier.includes('@');
-      this.authService.register({
-        name: name?.trim() || identifier.split('@')[0],
-        email: isEmail ? identifier.trim() : undefined,
-        phone: !isEmail ? identifier.trim() : (phone?.trim() || undefined),
-        password: password
-      }).subscribe({
-        next: (res) => {
-          this.isAuthSubmitting = false;
-          this.currentUser = res.user;
-          this.showAuthPanel = false;
-        },
-        error: (err) => {
-          this.isAuthSubmitting = false;
-          this.authErrorMessage = err?.error?.message || 'Registration failed. Try signing in directly.';
-        }
-      });
+
+      const isEmail =
+        identifier.includes('@');
+
+      this.authService
+        .register({
+
+          name:
+            name?.trim() ||
+            identifier.split('@')[0],
+
+          email:
+            isEmail
+              ? identifier.trim()
+              : undefined,
+
+          phone:
+            !isEmail
+              ? identifier.trim()
+              : (phone?.trim() || undefined),
+
+          password
+        })
+        .subscribe({
+
+          next: (res) => {
+
+            this.isAuthSubmitting = false;
+
+            this.currentUser =
+              res.user;
+
+            this.showAuthPanel = false;
+          },
+
+          error: (err) => {
+
+            this.isAuthSubmitting = false;
+
+            this.authErrorMessage =
+              err?.error?.message ||
+              'Registration failed. Try signing in directly.';
+          }
+        });
     }
   }
 
   logout(): void {
+
     this.authService.logout();
+
     this.currentUser = null;
   }
 
+  /**
+   * Submit an emergency help request.
+   *
+   * IMPORTANT:
+   * We check BOTH:
+   * 1. this.isOnline
+   * 2. navigator.onLine
+   *
+   * This prevents the UI from getting stuck on
+   * "Routing to Dispatch Grid..." when the device is offline.
+   */
   submitHelpRequest(): void {
+
     this.successMessage = '';
     this.errorMessage = '';
 
+    // Validate the form first.
     if (this.helpRequestForm.invalid) {
+
       this.helpRequestForm.markAllAsTouched();
-      this.errorMessage = 'Please complete all required fields marked in red.';
+
+      this.errorMessage =
+        'Please complete all required fields marked in red.';
+
       return;
     }
 
-    const val = this.helpRequestForm.value;
-    const finalDisasterType = val.disasterType === 'Other' && val.disasterTypeOther?.trim()
-      ? `Other: ${val.disasterTypeOther.trim()}`
-      : val.disasterType;
+    const val =
+      this.helpRequestForm.value;
+
+    const finalDisasterType =
+      val.disasterType === 'Other' &&
+      val.disasterTypeOther?.trim()
+
+        ? `Other: ${val.disasterTypeOther.trim()}`
+
+        : val.disasterType;
 
     const requestPayload: HelpRequestCreateRequest = {
-      name: val.name.trim(),
-      contactPhone: val.contactPhone?.trim(),
-      alternateContact: val.alternateContact?.trim() || undefined,
-      location: val.location.trim(),
-      landmark: val.landmark?.trim() || undefined,
-      peopleCount: Number(val.peopleCount) || 1,
-      helpType: 'RESCUE_AND_SUPPLIES',
-      priority: val.priority,
-      disasterType: finalDisasterType,
-      specialNeeds: this.selectedSpecialNeeds.length > 0 ? this.selectedSpecialNeeds.join(', ') : undefined,
-      description: val.details?.trim() || `Emergency assistance requested for ${finalDisasterType}`,
-      photoData: this.photoData || undefined,
-      clientRequestId: this.lastClientRequestId || this.generateClientRequestId()
+
+      name:
+        val.name.trim(),
+
+      contactPhone:
+        val.contactPhone?.trim(),
+
+      alternateContact:
+        val.alternateContact?.trim() ||
+        undefined,
+
+      location:
+        val.location.trim(),
+
+      landmark:
+        val.landmark?.trim() ||
+        undefined,
+
+      peopleCount:
+        Number(val.peopleCount) || 1,
+
+      helpType:
+        'RESCUE_AND_SUPPLIES',
+
+      priority:
+        val.priority,
+
+      disasterType:
+        finalDisasterType,
+
+      specialNeeds:
+        this.selectedSpecialNeeds.length > 0
+          ? this.selectedSpecialNeeds.join(', ')
+          : undefined,
+
+      description:
+        val.details?.trim() ||
+        `Emergency assistance requested for ${finalDisasterType}`,
+
+      photoData:
+        this.photoData ||
+        undefined,
+
+      clientRequestId:
+        this.lastClientRequestId ||
+        this.generateClientRequestId()
     };
 
     this.isSubmitting = true;
 
-    if (!navigator.onLine) {
-      this.helpRequestService.queueRequest(requestPayload);
+    /*
+     * IMPORTANT OFFLINE CHECK
+     *
+     * We check both the component state and the browser state.
+     *
+     * If either one says that we are offline,
+     * DON'T call the backend.
+     *
+     * Instead, save the request locally.
+     */
+    if (!this.isOnline || !navigator.onLine) {
+
+      // Keep the component state consistent.
+      this.isOnline = false;
+
+      // Store the request in LocalStorage queue.
+      this.helpRequestService.queueRequest(
+        requestPayload
+      );
+
+      // Stop the loading spinner/button state.
       this.isSubmitting = false;
+
       this.requestId = null;
-      this.successMessage = 'Offline: Your emergency request is stored locally and will automatically transmit upon connection.';
+
+      // Tell the user exactly what happened.
+      this.successMessage =
+        'Offline: Your emergency request is stored locally and will automatically transmit upon connection.';
+
+      // Reset the form.
       this.helpRequestForm.reset({
-        name: this.currentUser?.name || '',
-        contactPhone: this.currentUser?.phone || '',
-        alternateContact: '',
-        location: '',
-        landmark: '',
-        peopleCount: 1,
-        priority: 'HIGH',
-        disasterType: 'Flood / Inundation',
-        disasterTypeOther: '',
-        details: ''
+
+        name:
+          this.currentUser?.name || '',
+
+        contactPhone:
+          this.currentUser?.phone || '',
+
+        alternateContact:
+          '',
+
+        location:
+          '',
+
+        landmark:
+          '',
+
+        peopleCount:
+          1,
+
+        priority:
+          'HIGH',
+
+        disasterType:
+          'Flood / Inundation',
+
+        disasterTypeOther:
+          '',
+
+        details:
+          ''
       });
+
       this.selectedSpecialNeeds = [];
+
       this.photoData = '';
       this.photoName = '';
+
       return;
     }
 
-    this.helpRequestService.createHelpRequest(requestPayload).subscribe({
-      next: (res: HelpRequestResponse) => {
-        this.isSubmitting = false;
-        this.requestId = res.id;
-        this.successMessage = `Emergency dispatch ID #${res.id} generated! Response teams have been notified.`;
-        this.helpRequestForm.reset({
-          name: this.currentUser?.name || '',
-          contactPhone: this.currentUser?.phone || '',
-          alternateContact: '',
-          location: '',
-          landmark: '',
-          peopleCount: 1,
-          priority: 'HIGH',
-          disasterType: 'Flood / Inundation',
-          disasterTypeOther: '',
-          details: ''
-        });
-        this.selectedSpecialNeeds = [];
-        this.photoData = '';
-        this.photoName = '';
-        this.lastClientRequestId = '';
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        console.warn('Live submit failed, queueing offline:', err);
-        this.helpRequestService.queueRequest(requestPayload);
-        this.successMessage = 'Network interruption detected. Your emergency request has been safely queued and will sync automatically.';
-      }
-    });
+    /*
+     * We are online.
+     *
+     * Now it is safe to send the request
+     * to the live Spring Boot backend.
+     */
+    this.helpRequestService
+      .createHelpRequest(requestPayload)
+      .subscribe({
+
+        next: (res: HelpRequestResponse) => {
+
+          this.isSubmitting = false;
+
+          this.requestId =
+            res.id;
+
+          this.successMessage =
+            `Emergency dispatch ID #${res.id} generated! Response teams have been notified.`;
+
+          // Reset form after successful submission.
+          this.helpRequestForm.reset({
+
+            name:
+              this.currentUser?.name || '',
+
+            contactPhone:
+              this.currentUser?.phone || '',
+
+            alternateContact:
+              '',
+
+            location:
+              '',
+
+            landmark:
+              '',
+
+            peopleCount:
+              1,
+
+            priority:
+              'HIGH',
+
+            disasterType:
+              'Flood / Inundation',
+
+            disasterTypeOther:
+              '',
+
+            details:
+              ''
+          });
+
+          this.selectedSpecialNeeds = [];
+
+          this.photoData = '';
+          this.photoName = '';
+
+          this.lastClientRequestId = '';
+        },
+
+        error: (err) => {
+
+          this.isSubmitting = false;
+
+          console.warn(
+            'Live submit failed, queueing request:',
+            err
+          );
+
+          /*
+           * Even if navigator.onLine says we are online,
+           * the actual request can still fail because of a
+           * temporary network interruption.
+           *
+           * Therefore, safely queue the request as a fallback.
+           */
+          this.helpRequestService
+            .queueRequest(requestPayload);
+
+          this.successMessage =
+            'Network interruption detected. Your emergency request has been safely queued and will sync automatically.';
+        }
+      });
   }
 
-
+  /**
+   * Generates a unique ID for each client-side request.
+   *
+   * This helps prevent the same offline request
+   * from being added to the queue multiple times.
+   */
   private generateClientRequestId(): string {
-    const rand = Math.random().toString(36).substring(2, 10);
-    this.lastClientRequestId = `hr-${Date.now()}-${rand}`;
+
+    const rand =
+      Math.random()
+        .toString(36)
+        .substring(2, 10);
+
+    this.lastClientRequestId =
+      `hr-${Date.now()}-${rand}`;
+
     return this.lastClientRequestId;
   }
 }

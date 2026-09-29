@@ -6,7 +6,7 @@ export type AppTheme = 'light' | 'dark';
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly storageKey = 'aidlinkx-theme';
+  private readonly storageKey = 'resqgrid-theme';
   readonly isDark = signal<boolean>(false);
 
   constructor() {

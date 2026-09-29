@@ -1,10 +1,10 @@
 {
-  "name": "aidlinkx-app",
+  "name": "resqgrid-app",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && node -e \"const fs=require('fs'),path=require('path'); const src=path.resolve('dist/aidlinkx-app/browser'); const d1=path.resolve('dist/resqgrid-app'); const d2=path.resolve('dist/resqgrid-app/browser'); fs.mkdirSync(d1,{recursive:true}); fs.cpSync(src,d1,{recursive:true}); fs.mkdirSync(d2,{recursive:true}); fs.cpSync(src,d2,{recursive:true});\"",
+    "build": "ng build && node -e \"const fs=require('fs'),path=require('path'); const src=path.resolve('dist/resqgrid-app/browser'); const d1=path.resolve('dist/resqgrid-app'); const d2=path.resolve('dist/resqgrid-app/browser'); fs.mkdirSync(d1,{recursive:true}); fs.cpSync(src,d1,{recursive:true}); fs.mkdirSync(d2,{recursive:true}); fs.cpSync(src,d2,{recursive:true});\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -170,7 +170,7 @@ export class CoordinatorLogin implements OnInit, OnDestroy {
     const selected = this.levels.find(l => l.value === level);
 
     this.isLoading = true;
-    localStorage.setItem('aidlinkxCoordinatorLevel', level);
+    localStorage.setItem('resqgridCoordinatorLevel', level);
     localStorage.setItem('resqgridCoordinatorLevel', level);
 
     this.authService.login(identifier.trim(), password, selected?.role, securityKey?.trim()).subscribe({

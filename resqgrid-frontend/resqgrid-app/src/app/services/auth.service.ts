@@ -28,7 +28,7 @@ export interface RegisterRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly storageKey = 'aidlinkx-auth-session';
+  private readonly storageKey = 'resqgrid-auth-session';
   private readonly legacyKey = 'resqgrid-auth-session';
   private readonly authUrl = `${API_BASE_URL}/auth`;
 

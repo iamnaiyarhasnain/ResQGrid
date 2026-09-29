@@ -35,7 +35,7 @@ export interface QueuedHelpRequest {
 @Injectable({ providedIn: 'root' })
 export class HelpRequestService {
   private readonly apiUrl = `${API_BASE_URL}/help-requests`;
-  private readonly queueKey = 'aidlinkx-help-request-queue-v3';
+  private readonly queueKey = 'resqgrid-help-request-queue-v3';
   private readonly legacyQueueKey = 'resqgrid-help-request-queue-v2';
   private isFlushing = false;
 

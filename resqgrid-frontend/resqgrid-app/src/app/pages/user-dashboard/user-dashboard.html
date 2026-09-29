@@ -1,12 +1,12 @@
 <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
 
   <!-- ==================== TOP NAVIGATION HEADER ==================== -->
-  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-40 backdrop-blur">
+  <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 sticky top-0 z-40 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
       
       <!-- Brand Logo -->
-      <a routerLink="/user" class="flex items-center gap-3 shrink-0" aria-label="AidLinkX Home">
-        <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-9 sm:h-10 w-auto" />
+      <a routerLink="/user" class="flex items-center gap-3 shrink-0" aria-label="ResQgrid Home">
+        <span class="flex items-center gap-2.5"><img src="/resqgrid-mark.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl shadow-md shadow-rose-500/30" /><span class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">ResQ<span class="text-rose-600 dark:text-rose-400">grid</span></span></span>
       </a>
 
       <!-- Right Side Actions (Coordinator Login, Camp Portal, Feedback, Language, Theme) -->
@@ -94,7 +94,7 @@
         <!-- Coordinator Login Button (Prominently Top Right) -->
         <a
           routerLink="/coordinator-login"
-          class="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold transition shadow-sm hover:shadow active:scale-[0.98]"
+          class="inline-flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-white hover:bg-slate-700 dark:hover:bg-slate-200 text-white dark:text-slate-900 px-3.5 py-1.5 text-xs font-semibold transition shadow-sm hover:shadow active:scale-[0.98]"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -138,39 +138,56 @@
   <!-- ==================== MAIN HERO & DASHBOARD ==================== -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- ==================== OFFLINE-READY CRISIS GRID HERO BANNER ==================== -->
-    <div class="mb-6 rounded-2xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-r from-blue-50 via-white to-indigo-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/40 p-4 sm:p-5 shadow-sm">
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-start gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shrink-0 mt-0.5">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+    <!-- ==================== HERO ==================== -->
+    <section class="hero-surface mb-8 overflow-hidden rounded-3xl text-white shadow-md ring-1 ring-white/10">
+      <div class="grid items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-12 lg:px-14 lg:py-16">
+        <div class="animate-fade-up lg:col-span-7">
+          <span class="glass inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-rose-100 sm:text-xs">
+            <span class="relative flex h-2 w-2"><span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-rose-400"></span></span>
+            Built at WeMakeDevs &times; AWS Hackathon &middot; Bengaluru, India
+          </span>
+          <h1 class="mt-5 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
+            When networks fail,<br />
+            <span class="text-gradient-brand">the grid still responds.</span>
+          </h1>
+          <p class="mt-5 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+            ResQgrid is an offline-first disaster response platform. Requests are saved on your device and dispatched to NDRF and district coordinators the moment any connection returns.
+          </p>
+          <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+            <a href="#aid-request-form" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-rose-900/40 transition hover:brightness-110 active:scale-[0.98]">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" /></svg>
+              Request Emergency Help
+            </a>
+            <a href="tel:112" class="glass inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/15">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.95.68l1.5 4.49a1 1 0 01-.5 1.21l-2.26 1.13a11.04 11.04 0 005.52 5.52l1.13-2.26a1 1 0 011.21-.5l4.49 1.5a1 1 0 01.68.95V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z" /></svg>
+              Call 112
+            </a>
           </div>
-          <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
-                AidLinkX Humanitarian Emergency Grid
-              </h2>
-              <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/60 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-300">
-                Works Offline Without Internet
+        </div>
+
+        <div class="animate-fade-up lg:col-span-5" style="animation-delay: 0.15s">
+          <div class="animate-float glass rounded-2xl p-5 sm:p-6">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold uppercase tracking-widest text-slate-300">Grid Status</p>
+              <span [class]="isOnline ? 'inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-2.5 py-1 text-xs font-semibold text-emerald-300' : 'inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-semibold text-amber-300'">
+                <span [class]="isOnline ? 'h-2 w-2 animate-pulse rounded-full bg-emerald-400' : 'h-2 w-2 rounded-full bg-amber-400'"></span>
+                {{ isOnline ? 'Live Dispatch' : 'Offline (Cached)' }}
               </span>
             </div>
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-              <strong>Offline-First Resilience:</strong> This platform is engineered to function fully without internet or cellular connectivity &mdash; your emergency distress requests are stored securely on your local device and will automatically dispatch to NDRF coordinators the moment any connection is restored.
-            </p>
+            <div class="mt-5 grid grid-cols-3 gap-3 text-center">
+              <div class="rounded-xl bg-white/5 px-2 py-4 ring-1 ring-white/10"><p class="font-display text-2xl font-extrabold">24/7</p><p class="mt-1 text-[11px] text-slate-400">Dispatch</p></div>
+              <div class="rounded-xl bg-white/5 px-2 py-4 ring-1 ring-white/10"><p class="font-display text-2xl font-extrabold">100%</p><p class="mt-1 text-[11px] text-slate-400">Offline-ready</p></div>
+              <div class="rounded-xl bg-white/5 px-2 py-4 ring-1 ring-white/10"><p class="font-display text-2xl font-extrabold">3</p><p class="mt-1 text-[11px] text-slate-400">Command tiers</p></div>
+            </div>
+            <ul class="mt-5 space-y-2.5 text-sm text-slate-300">
+              <li class="flex items-center gap-2.5"><span class="h-1.5 w-1.5 rounded-full bg-rose-400"></span>Requests queued securely on-device</li>
+              <li class="flex items-center gap-2.5"><span class="h-1.5 w-1.5 rounded-full bg-indigo-400"></span>Auto-sync when connectivity returns</li>
+              <li class="flex items-center gap-2.5"><span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>Real-time triage for coordinators</li>
+            </ul>
           </div>
         </div>
-        <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-          <span [class]="isOnline 
-            ? 'inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300' 
-            : 'inline-flex items-center gap-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300'">
-            <span [class]="isOnline ? 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse' : 'h-2 w-2 rounded-full bg-amber-500'"></span>
-            <span>{{ isOnline ? 'Grid Online (Live Dispatch)' : 'Offline Mode Active (Cached)' }}</span>
-          </span>
-        </div>
       </div>
-    </div>
+    </section>
 
     <!-- Top Notifications -->
     @if (successMessage) {
@@ -209,7 +226,7 @@
             Emergency Response Directory
           </h2>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Instant 1-click dial and copy for national emergency services and AidLinkX crisis desk.
+            Instant 1-click dial and copy for national emergency services and ResQgrid crisis desk.
           </p>
         </div>
         @if (copiedNumber) {
@@ -549,7 +566,7 @@
             </button>
 
             <p class="text-center text-[11px] text-slate-500 dark:text-slate-400">
-              AidLinkX guarantees that all submitted incident coordinates are strictly transmitted to verified humanitarian responders.
+              ResQgrid guarantees that all submitted incident coordinates are strictly transmitted to verified humanitarian responders.
             </p>
 
           </form>
@@ -672,7 +689,7 @@
             Citizen Advisory &amp; Triage Protocol
           </h3>
           <p class="leading-relaxed">
-            AidLinkX operates in conjunction with certified National Disaster Response Force (NDRF) battalions, State Disaster Management Authorities (SDMA), and certified field NGOs.
+            ResQgrid operates in conjunction with certified National Disaster Response Force (NDRF) battalions, State Disaster Management Authorities (SDMA), and certified field NGOs.
           </p>
           <p class="leading-relaxed">
             For critical water-rescue operations in Bihar flood zones or debris search in Kerala landslide terrain, keep mobile phones charged, maintain line-of-sight signal markers, and rely on official camp dispatch IDs.
@@ -692,9 +709,12 @@
         
         <!-- Col 1: Brand & Mission -->
         <div class="md:col-span-2 space-y-3">
-          <img src="/aidlinkx-logo.svg" alt="AidLinkX" class="h-8 w-auto" />
+          <span class="flex items-center gap-2.5"><img src="/resqgrid-mark.svg" alt="" class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl shadow-md shadow-rose-500/30" /><span class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">ResQ<span class="text-rose-600 dark:text-rose-400">grid</span></span></span>
           <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md">
-            AidLinkX is an open disaster relief coordination and humanitarian grid designed for high-availability crisis response, field triage, and offline-resilient civilian distress routing.
+            ResQgrid is an open disaster relief coordination and humanitarian grid designed for high-availability crisis response, field triage, and offline-resilient civilian distress routing.
+          </p>
+          <p class="inline-flex items-center gap-2 rounded-full border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 px-3 py-1 text-[11px] font-semibold text-rose-700 dark:text-rose-300">
+            WeMakeDevs &times; AWS Hackathon &middot; Bengaluru
           </p>
           <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">
             Language: <span class="font-normal text-slate-500">English (India &amp; Global Operations)</span>
@@ -737,7 +757,7 @@
       <!-- Bottom Copyright & Language Bar -->
       <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
         <p>
-          &copy; 2026 AidLinkX. Developed by <span class="font-semibold text-slate-800 dark:text-slate-200">Naiyar Hasnain</span>. All rights reserved.
+          &copy; 2026 ResQgrid. Developed by <span class="font-semibold text-slate-800 dark:text-slate-200">Naiyar Hasnain</span>. All rights reserved.
         </p>
 
         <!-- Language Indicator & Selector at Bottom of Page -->
@@ -829,16 +849,16 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" (click)="showTermsModal = false">
       <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">AidLinkX Terms of Service</h3>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">ResQgrid Terms of Service</h3>
           <button type="button" (click)="showTermsModal = false" class="text-slate-400 hover:text-slate-600 p-1">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
         <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          <p><strong>1. Acceptance of Terms:</strong> By utilizing the AidLinkX emergency coordination platform, you acknowledge that this service is intended for disaster relief, search &amp; rescue logistics, and crisis mitigation.</p>
-          <p><strong>2. Emergency Communication Priority:</strong> AidLinkX is designed to assist civilian communities, National Disaster Response Force (NDRF), and local authorities. Submitting false distress reports or hoaxes constitutes a severe legal violation punishable under the Disaster Management Act, 2005.</p>
-          <p><strong>3. Offline Functionality:</strong> When offline, assistance requests are queued securely on your device's browser cache. While AidLinkX will transmit these upon reconnection, immediate life-threatening events should also be reported directly via telephone helpline 112 where network permits.</p>
-          <p><strong>4. Intellectual Property &amp; Authorship:</strong> &copy; 2026 AidLinkX. Developed by Naiyar Hasnain. All humanitarian logistics architectures and UI components are protected under applicable copyright regulations.</p>
+          <p><strong>1. Acceptance of Terms:</strong> By utilizing the ResQgrid emergency coordination platform, you acknowledge that this service is intended for disaster relief, search &amp; rescue logistics, and crisis mitigation.</p>
+          <p><strong>2. Emergency Communication Priority:</strong> ResQgrid is designed to assist civilian communities, National Disaster Response Force (NDRF), and local authorities. Submitting false distress reports or hoaxes constitutes a severe legal violation punishable under the Disaster Management Act, 2005.</p>
+          <p><strong>3. Offline Functionality:</strong> When offline, assistance requests are queued securely on your device's browser cache. While ResQgrid will transmit these upon reconnection, immediate life-threatening events should also be reported directly via telephone helpline 112 where network permits.</p>
+          <p><strong>4. Intellectual Property &amp; Authorship:</strong> &copy; 2026 ResQgrid. Developed by Naiyar Hasnain. All humanitarian logistics architectures and UI components are protected under applicable copyright regulations.</p>
         </div>
         <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
           <button type="button" (click)="showTermsModal = false" class="rounded-xl bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 text-xs font-semibold">
@@ -854,16 +874,16 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" (click)="showPrivacyModal = false">
       <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-xl border border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">AidLinkX Privacy Policy</h3>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">ResQgrid Privacy Policy</h3>
           <button type="button" (click)="showPrivacyModal = false" class="text-slate-400 hover:text-slate-600 p-1">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
         <div class="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-          <p><strong>1. Data Collection:</strong> When you submit an aid request, AidLinkX collects names, phone numbers, GPS coordinates, landmarks, and situational descriptions solely for the purpose of dispatching search, rescue, and medical teams.</p>
+          <p><strong>1. Data Collection:</strong> When you submit an aid request, ResQgrid collects names, phone numbers, GPS coordinates, landmarks, and situational descriptions solely for the purpose of dispatching search, rescue, and medical teams.</p>
           <p><strong>2. Data Sharing:</strong> Your emergency information is strictly shared only with authorized district emergency response coordinators, registered camp managers, and state disaster relief personnel.</p>
-          <p><strong>3. Zero Commercialization:</strong> AidLinkX does not sell, market, or commercialize citizen data. All information is retained purely for disaster audit, relief distribution accounting, and life-safety operations.</p>
-          <p><strong>4. Contact &amp; Oversight:</strong> Project oversight and data inquiries may be addressed to developer Naiyar Hasnain under AidLinkX humanitarian operations governance.</p>
+          <p><strong>3. Zero Commercialization:</strong> ResQgrid does not sell, market, or commercialize citizen data. All information is retained purely for disaster audit, relief distribution accounting, and life-safety operations.</p>
+          <p><strong>4. Contact &amp; Oversight:</strong> Project oversight and data inquiries may be addressed to developer Naiyar Hasnain under ResQgrid humanitarian operations governance.</p>
         </div>
         <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
           <button type="button" (click)="showPrivacyModal = false" class="rounded-xl bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 text-xs font-semibold">

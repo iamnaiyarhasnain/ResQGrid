@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class CoordinatorDashboard {
   coordinatorLevel =
-    localStorage.getItem('aidlinkxCoordinatorLevel') ||
+    localStorage.getItem('resqgridCoordinatorLevel') ||
     localStorage.getItem('resqgridCoordinatorLevel') ||
     'DISTRICT';
 
