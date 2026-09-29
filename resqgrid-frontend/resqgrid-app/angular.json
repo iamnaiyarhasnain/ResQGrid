@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "aidlinkx-app": {
+    "resqgrid-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -56,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "aidlinkx-app:build:production"
+              "buildTarget": "resqgrid-app:build:production"
             },
             "development": {
-              "buildTarget": "aidlinkx-app:build:development"
+              "buildTarget": "resqgrid-app:build:development"
             }
           },
           "defaultConfiguration": "development"

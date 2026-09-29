@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && node -e \"const fs=require('fs'),path=require('path'); const src=path.resolve('dist/resqgrid-app/browser'); const d1=path.resolve('dist/resqgrid-app'); const d2=path.resolve('dist/resqgrid-app/browser'); fs.mkdirSync(d1,{recursive:true}); fs.cpSync(src,d1,{recursive:true}); fs.mkdirSync(d2,{recursive:true}); fs.cpSync(src,d2,{recursive:true});\"",
+    "build": "ng build && node -e \"const fs=require('fs'),path=require('path'); const out=path.resolve('dist/resqgrid-app'); fs.cpSync(path.join(out,'browser'),out,{recursive:true});\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
